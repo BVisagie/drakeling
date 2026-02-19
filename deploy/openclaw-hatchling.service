@@ -1,0 +1,21 @@
+# OpenClaw Hatchling — systemd user service
+#
+# Install to: ~/.config/systemd/user/openclaw-hatchling.service
+#
+# Adjust ExecStart if openclaw-hatchlingd is installed to a different path.
+# Secrets and LLM configuration are read from the .env file in the platform
+# data directory (~/.local/share/openclaw-hatchling/.env). See the README
+# for setup instructions.
+
+[Unit]
+Description=OpenClaw Hatchling daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/openclaw-hatchlingd
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

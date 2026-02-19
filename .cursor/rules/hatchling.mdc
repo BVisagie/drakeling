@@ -1,0 +1,59 @@
+---
+description: OpenClaw Hatchling project architecture, conventions, and key constraints
+alwaysApply: true
+---
+
+# OpenClaw Hatchling
+
+A local companion creature daemon + terminal UI. Spec: `docs/openclaw_hatchling_spec_v2.2.md`
+
+## Architecture
+
+Two executables: `openclaw-hatchlingd` (daemon) and `openclaw-hatchling` (Textual TUI).
+All intelligence lives in the daemon. The TUI is a pure HTTP client.
+Daemon binds to `127.0.0.1:52780` only. Bearer token auth on all endpoints.
+
+## Package layout
+
+```
+src/openclaw_hatchling/
+  domain/     Pure Python. No framework imports. Models, traits, decay, lifecycle, sprites.
+  daemon/     Config, startup, tick loop, main entry point.
+  api/        FastAPI routers: birth, status, care, talk, rest, attention, export_import.
+  llm/        Single LLM wrapper (wrapper.py) + prompt builder (prompts.py).
+  crypto/     ed25519 identity, API token, AES-256-GCM bundle format.
+  storage/    SQLAlchemy 2.x async models, database engine, platformdirs paths.
+  ui/         Textual app, birth ceremony, widgets (sprite_panel, stats, feed, input).
+```
+
+## Key constraints
+
+- Domain layer must NEVER import FastAPI, SQLAlchemy, httpx, or any framework code.
+- The LLM must NEVER be given tool-use system instructions.
+- All file permissions (0o600) guarded by `os.name != "nt"` for Windows compat.
+- `platformdirs.user_data_dir("openclaw-hatchling", "openclaw")` for all data paths.
+- Private key generated BEFORE any DB state on birth. If key gen fails, abort.
+- 6 mutable stats (mood, energy, trust, loneliness, state_curiosity, stability), all [0.0, 1.0].
+- 6 permanent traits (trait_curiosity, trait_sociability, trait_confidence, trait_emotional_sensitivity, trait_autonomy_preference, trait_loneliness_rate).
+- `state_curiosity` is distinct from `trait_curiosity`.
+- Lifecycle: egg -> hatched -> juvenile -> mature. Plus resting (from any active) and exhausted (budget).
+- Resting stores `pre_resting_stage`, exhausted stores `pre_exhausted_stage`.
+- Token budget: per-call cap (default 300), daily budget (default 10,000), reset at midnight.
+- LLM wrapper handles both direct provider (HATCHLING_LLM_BASE_URL) and OpenClaw gateway mode.
+
+## Database tables
+
+creature_state (single row, id=1), creature_memory, interaction_log, lifecycle_events.
+Valid event_types: born, egg_to_hatched, hatched_to_juvenile, juvenile_to_mature,
+entered_resting, exited_resting, budget_exhausted, budget_restored, relocated.
+
+## Stat decay rates (per tick)
+
+mood: -0.005 | energy: -0.003 (+0.006 resting) | trust: -0.001 (floor enforced)
+loneliness: +0.008*(0.5+trait_loneliness_rate) | state_curiosity: -0.004 | stability: -0.002 (+0.01 resting)
+
+## Lifecycle thresholds
+
+egg->hatched: 300s + care>=1 | hatched->juvenile: 3600s + care>=3
+juvenile->mature: 86400s + care>=10 + talk>=5 | mature->resting: energy<0.15
+resting wake: energy>=0.5 OR 3600s elapsed

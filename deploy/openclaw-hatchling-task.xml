@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-16"?>
+<!--
+  OpenClaw Hatchling — Windows Task Scheduler export
+
+  Import with:
+    schtasks /create /tn "OpenClaw Hatchling" /xml deploy\openclaw-hatchling-task.xml
+
+  Or use Task Scheduler GUI: trigger "At log on", action
+  "Start a program: openclaw-hatchlingd", run only when user is logged on.
+
+  Adjust the Command path if openclaw-hatchlingd is installed elsewhere.
+  Secrets and LLM configuration are read from the .env file in the
+  platform data directory (%APPDATA%\openclaw\openclaw-hatchling\.env).
+  See the README for setup instructions.
+-->
+<Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+  <RegistrationInfo>
+    <Description>OpenClaw Hatchling daemon</Description>
+  </RegistrationInfo>
+  <Triggers>
+    <LogonTrigger>
+      <Enabled>true</Enabled>
+    </LogonTrigger>
+  </Triggers>
+  <Principals>
+    <Principal>
+      <LogonType>InteractiveToken</LogonType>
+      <RunLevel>LeastPrivilege</RunLevel>
+    </Principal>
+  </Principals>
+  <Settings>
+    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
+    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
+    <StopIfGoingOnBatteries>false</StopIfGoingOnBatteries>
+    <ExecutionTimeLimit>PT0S</ExecutionTimeLimit>
+    <Enabled>true</Enabled>
+  </Settings>
+  <Actions>
+    <Exec>
+      <Command>openclaw-hatchlingd</Command>
+    </Exec>
+  </Actions>
+</Task>

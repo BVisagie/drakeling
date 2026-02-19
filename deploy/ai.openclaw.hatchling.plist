@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  OpenClaw Hatchling — macOS launchd user agent
+
+  Install to: ~/Library/LaunchAgents/ai.openclaw.hatchling.plist
+
+  Adjust ProgramArguments if openclaw-hatchlingd is installed to a
+  different path. Secrets and LLM configuration are read from the .env
+  file in the platform data directory
+  (~/Library/Application Support/openclaw-hatchling/.env).
+  See the README for setup instructions.
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+  "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>ai.openclaw.hatchling</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>/usr/local/bin/openclaw-hatchlingd</string>
+  </array>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>KeepAlive</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>/tmp/openclaw-hatchling.log</string>
+  <key>StandardErrorPath</key>
+  <string>/tmp/openclaw-hatchling.err</string>
+</dict>
+</plist>
