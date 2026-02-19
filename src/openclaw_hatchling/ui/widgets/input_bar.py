@@ -6,7 +6,7 @@ from textual.widgets import Input, Label
 
 
 class InputBar(Horizontal):
-    """Text input for talking to the creature, with key-binding hints."""
+    """Text input for talking to the creature."""
 
     DEFAULT_CSS = """
     InputBar {
@@ -26,4 +26,3 @@ class InputBar(Horizontal):
 
     def compose(self) -> ComposeResult:
         yield Input(placeholder="Talk to your creature...", id="talk-input")
-        yield Label("[dim]c[/]:care  [dim]z[/]:rest", id="hints")

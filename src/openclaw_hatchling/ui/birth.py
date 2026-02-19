@@ -17,11 +17,11 @@ from openclaw_hatchling.ui.client import HatchlingClient
 
 
 class BirthScreen(Screen):
-    """Full-screen birth ceremony (Sec 3.2.1)."""
+    """Full-screen birth ceremony."""
 
     BINDINGS: ClassVar[list[Binding]] = [
-        Binding("r", "reroll", "Reroll colour", show=True, priority=True),
-        Binding("enter", "confirm", "Confirm", show=True, priority=True),
+        Binding("r", "reroll", "Reroll colour"),
+        Binding("enter", "confirm", "Confirm"),
     ]
 
     def __init__(self, client: HatchlingClient) -> None:
@@ -45,6 +45,18 @@ class BirthScreen(Screen):
 
     def on_mount(self) -> None:
         self._update_egg_display()
+
+    def check_action(self, action: str, parameters: tuple) -> bool | None:
+        """Control which bindings are active/visible per phase."""
+        if action == "reroll":
+            if self._phase != "egg" or self._rerolls_remaining <= 0:
+                return None  # hide
+            return True
+        if action == "confirm":
+            if self._phase in ("egg", "confirm"):
+                return True
+            return None  # hide during naming and done
+        return True
 
     def _update_egg_display(self) -> None:
         hex_tint = self._colour.hex_tint
@@ -70,26 +82,7 @@ class BirthScreen(Screen):
 
         prompt_label = self.query_one("#prompt-label", Label)
         if not self._colour_confirmed:
-            prompt_label.update(
-                "[bold]Enter[/] to keep this colour"
-            )
-
-    def _update_bindings(self) -> None:
-        """Adjust which bindings are visible based on current phase."""
-        if self._phase == "egg":
-            self.BINDINGS = [
-                Binding("r", "reroll", "Reroll colour", show=self._rerolls_remaining > 0, priority=True),
-                Binding("enter", "confirm", "Confirm", show=True, priority=True),
-            ]
-        elif self._phase == "naming":
-            self.BINDINGS = []
-        elif self._phase == "confirm":
-            self.BINDINGS = [
-                Binding("enter", "confirm", "Begin", show=True, priority=True),
-            ]
-        else:
-            self.BINDINGS = []
-        self.refresh_bindings()
+            prompt_label.update("[bold]Enter[/] to keep this colour")
 
     def action_reroll(self) -> None:
         if self._colour_confirmed or self._rerolls_remaining <= 0:
@@ -97,7 +90,7 @@ class BirthScreen(Screen):
         self._rerolls_remaining -= 1
         self._colour = random.choice(list(DragonColour))
         self._update_egg_display()
-        self._update_bindings()
+        self.refresh_bindings()
 
     def action_confirm(self) -> None:
         if self._phase == "egg" and not self._colour_confirmed:
@@ -116,12 +109,12 @@ class BirthScreen(Screen):
             )
             self.query_one("#birth-container", Vertical).mount(name_input)
             name_input.focus()
-            self._update_bindings()
+            self.refresh_bindings()
             return
 
         if self._phase == "confirm":
             self._phase = "done"
-            self._update_bindings()
+            self.refresh_bindings()
             self.run_worker(self._do_birth())
 
     @on(Input.Submitted, "#name-input")
@@ -148,7 +141,7 @@ class BirthScreen(Screen):
         )
         self.query_one("#character-label", Label).display = False
         self.set_focus(None)
-        self._update_bindings()
+        self.refresh_bindings()
 
     async def _do_birth(self) -> None:
         try:

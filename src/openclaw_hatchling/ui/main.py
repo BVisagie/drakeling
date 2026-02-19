@@ -21,9 +21,10 @@ class MainScreen(Screen):
     """Primary creature status and interaction screen."""
 
     BINDINGS: ClassVar[list[Binding]] = [
-        Binding("c", "care_menu", "Care", show=True),
-        Binding("z", "rest", "Rest", show=True),
-        Binding("q", "quit", "Quit", show=True),
+        Binding("f2", "care_menu", "Care"),
+        Binding("f3", "rest", "Rest"),
+        Binding("f4", "focus_input", "Talk"),
+        Binding("q", "quit", "Quit"),
     ]
 
     DEFAULT_CSS = """
@@ -70,6 +71,15 @@ class MainScreen(Screen):
     def on_mount(self) -> None:
         self._refresh_stats()
         self._poll_status()
+        talk_input = self.query_one("#talk-input", Input)
+        talk_input.focus()
+
+    def check_action(self, action: str, parameters: tuple) -> bool | None:
+        if action == "quit":
+            talk_input = self.query_one("#talk-input", Input)
+            if talk_input.has_focus:
+                return None
+        return True
 
     def _refresh_stats(self) -> None:
         stats = self.query_one("#stats", StatsDisplay)
@@ -82,7 +92,6 @@ class MainScreen(Screen):
             state_curiosity=s.get("state_curiosity", 0.5),
             stability=s.get("stability", 0.5),
         )
-        # Update sprite
         self._stage = LifecycleStage(s.get("lifecycle_stage", "egg"))
         sprite = self.query_one(SpritePanel)
         sprite.update_sprite(self._stage, self._colour)
@@ -168,11 +177,18 @@ class MainScreen(Screen):
         except Exception as exc:
             feed.add_system_note(f"(could not rest: {exc})")
 
+    def action_focus_input(self) -> None:
+        self.query_one("#talk-input", Input).focus()
+
 
 class HatchlingApp(App):
     """Terminal UI entry point for OpenClaw Hatchling."""
 
     TITLE = "OpenClaw Hatchling"
+
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("ctrl+q", "quit", "Quit"),
+    ]
 
     def __init__(self) -> None:
         super().__init__()
