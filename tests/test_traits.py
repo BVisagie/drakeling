@@ -1,8 +1,8 @@
 """Tests for trait generation."""
 import secrets
 
-from openclaw_hatchling.domain.models import DragonColour
-from openclaw_hatchling.domain.traits import COLOUR_TRAIT_BIAS, generate_traits
+from drakeling.domain.models import DragonColour
+from drakeling.domain.traits import COLOUR_TRAIT_BIAS, generate_traits
 
 
 class TestColourTraitBias:

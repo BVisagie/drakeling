@@ -1,35 +1,35 @@
 ---
-name: hatchling
+name: drakeling
 version: 1.0.0
 description: Check on your Hatchling companion creature, send it care, or see how it is feeling. Use when the user mentions their hatchling, companion creature, or wants to check in on or care for their creature.
-author: openclaw-hatchling
+author: drakeling
 metadata:
   clawdbot:
     emoji: "🥚"
     requires:
       env:
-        - name: HATCHLING_API_TOKEN
-          description: Bearer token for the local Hatchling daemon. Found in the Hatchling data directory as `api_token`.
+        - name: DRAKELING_API_TOKEN
+          description: Bearer token for the local Drakeling daemon. Found in the Drakeling data directory as `api_token`.
       network:
         - localhost
 permissions:
   - network:outbound
 ---
 
-# Hatchling Companion Skill
+# Drakeling Companion Skill
 
 You can check on the user's Hatchling companion creature and send it care.
 
 ## Daemon address
 
-The Hatchling daemon listens on `http://127.0.0.1:52780` by default. If the user has configured a custom port via `HATCHLING_PORT`, use that value instead.
+The Drakeling daemon listens on `http://127.0.0.1:52780` by default. If the user has configured a custom port via `DRAKELING_PORT`, use that value instead.
 
 ## Authentication
 
 Every request must include the header:
 
 ```
-Authorization: Bearer $HATCHLING_API_TOKEN
+Authorization: Bearer $DRAKELING_API_TOKEN
 ```
 
 ## Checking status — GET /status

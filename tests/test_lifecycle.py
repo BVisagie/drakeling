@@ -1,7 +1,7 @@
 """Tests for lifecycle transition evaluation."""
 import time
 
-from openclaw_hatchling.domain.lifecycle import (
+from drakeling.domain.lifecycle import (
     EGG_TO_HATCHED_CARE,
     EGG_TO_HATCHED_TIME,
     ENERGY_RESTING_THRESHOLD,
@@ -13,7 +13,7 @@ from openclaw_hatchling.domain.lifecycle import (
     JUVENILE_TO_MATURE_TIME,
     evaluate_transitions,
 )
-from openclaw_hatchling.domain.models import (
+from drakeling.domain.models import (
     Creature,
     LifecycleStage,
     MoodState,

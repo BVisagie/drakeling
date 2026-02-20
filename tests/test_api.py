@@ -7,10 +7,10 @@ from unittest.mock import AsyncMock
 from httpx import ASGITransport, AsyncClient
 from sqlalchemy import select
 
-from openclaw_hatchling.api.app import create_app
-from openclaw_hatchling.daemon.config import HatchlingConfig
-from openclaw_hatchling.storage.database import get_engine, get_session_factory, init_db
-from openclaw_hatchling.storage.models import CreatureStateRow
+from drakeling.api.app import create_app
+from drakeling.daemon.config import DrakelingConfig
+from drakeling.storage.database import get_engine, get_session_factory, init_db
+from drakeling.storage.models import CreatureStateRow
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ async def app_and_client(tmp_path):
     token = "test-token-12345"
     (tmp_path / "api_token").write_text(token)
 
-    config = HatchlingConfig(dev_mode=True, allow_import=True)
+    config = DrakelingConfig(dev_mode=True, allow_import=True)
     engine = get_engine(tmp_path)
     await init_db(engine)
     session_factory = get_session_factory(engine)

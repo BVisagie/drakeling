@@ -3,9 +3,9 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "openclaw-hatchling"
+name = "drakeling"
 version = "0.1.0"
-description = "A local, lightweight, learning-only companion creature for the OpenClaw ecosystem"
+description = "A local, lightweight, learning-only companion creature. Drakeling is part of the OpenClaw ecosystem"
 readme = "README.md"
 requires-python = ">=3.12"
 license = {file = "LICENSE"}
@@ -23,10 +23,10 @@ dependencies = [
 ]
 
 [project.urls]
-Homepage = "https://github.com/BVisagie/openclaw-hatchling"
-Repository = "https://github.com/BVisagie/openclaw-hatchling"
-"Issue Tracker" = "https://github.com/BVisagie/openclaw-hatchling/issues"
-"ClawHub Skill Listing" = "https://clawhub.openclaw.ai/skills/openclaw-hatchling"
+Homepage = "https://github.com/BVisagie/drakeling"
+Repository = "https://github.com/BVisagie/drakeling"
+"Issue Tracker" = "https://github.com/BVisagie/drakeling/issues"
+"ClawHub Skill Listing" = "https://clawhub.openclaw.ai/skills/drakeling"
 
 [project.optional-dependencies]
 dev = [
@@ -35,8 +35,8 @@ dev = [
 ]
 
 [project.scripts]
-openclaw-hatchlingd = "openclaw_hatchling.daemon.main:main"
-openclaw-hatchling = "openclaw_hatchling.ui.main:main"
+drakelingd = "drakeling.daemon.main:main"
+drakeling = "drakeling.ui.main:main"
 
 [tool.hatchling.build]
 sources = ["src"]

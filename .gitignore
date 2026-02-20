@@ -1,5 +1,5 @@
-# HATCHLING-PATTERN
-*.hatchling
+# Drakeling bundle exports
+*.drakeling
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

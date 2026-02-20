@@ -1,6 +1,6 @@
-# OpenClaw Hatchling
+# Drakeling
 
-A local, lightweight, learning-only companion creature for the OpenClaw ecosystem.
+A local, lightweight, learning-only companion creature. Drakeling is part of the OpenClaw ecosystem.
 
 Hatchling is a small digital dragon that lives on your machine. It reflects,
 learns about you, and expresses feelings — but never performs tasks, accesses
@@ -16,34 +16,34 @@ files, or reaches the network. Safe by architecture.
 ### Using pipx (recommended — isolated environment)
 
 ```bash
-pipx install openclaw-hatchling
+pipx install drakeling
 ```
 
 ### Using pip
 
 ```bash
-pip install openclaw-hatchling
+pip install drakeling
 ```
 
 ### Using uv
 
 ```bash
-uv tool install openclaw-hatchling
+uv tool install drakeling
 ```
 
 After installation, two commands are available:
 
 | Command | Purpose |
 |---|---|
-| `openclaw-hatchlingd` | Start the background daemon (HTTP API on `127.0.0.1:52780`) |
-| `openclaw-hatchling` | Launch the interactive terminal UI |
+| `drakelingd` | Start the background daemon (HTTP API on `127.0.0.1:52780`) |
+| `drakeling` | Launch the interactive terminal UI |
 
 ## Getting started
 
 ### 1. Start the daemon
 
 ```bash
-openclaw-hatchlingd
+drakelingd
 ```
 
 On first run, the daemon:
@@ -60,7 +60,7 @@ service — see [Running as a service](#running-as-a-service)).
 In a separate terminal:
 
 ```bash
-openclaw-hatchling
+drakeling
 ```
 
 If no creature exists, the UI walks you through the **birth ceremony**: pick a
@@ -82,15 +82,15 @@ All persistent state lives in a platform-specific data directory:
 
 | Platform | Path |
 |---|---|
-| Linux | `~/.local/share/openclaw-hatchling/` |
-| macOS | `~/Library/Application Support/openclaw-hatchling/` |
-| Windows | `%APPDATA%\openclaw\openclaw-hatchling\` |
+| Linux | `~/.local/share/drakeling/` |
+| macOS | `~/Library/Application Support/drakeling/` |
+| Windows | `%APPDATA%\drakeling\drakeling\` |
 
 Contents:
 
 | File | Purpose |
 |---|---|
-| `hatchling.db` | SQLite database (creature state, memory, interaction log, lifecycle events) |
+| `drakeling.db` | SQLite database (creature state, memory, interaction log, lifecycle events) |
 | `identity.key` | Ed25519 private key — ties the creature to this machine |
 | `api_token` | Bearer token for authenticating API requests |
 | `.env` | Optional — environment variable overrides (see below) |
@@ -106,18 +106,18 @@ inherit shell profiles like `~/.bashrc`.
 
 | Variable | Description | Default |
 |---|---|---|
-| `HATCHLING_LLM_BASE_URL` | OpenAI-compatible `/v1` endpoint URL | *(required unless gateway mode)* |
-| `HATCHLING_LLM_API_KEY` | API key for the LLM provider | *(required unless gateway mode)* |
-| `HATCHLING_LLM_MODEL` | Model name (e.g. `gpt-4o-mini`, `llama3.3`) | *(required unless gateway mode)* |
-| `HATCHLING_USE_OPENCLAW_GATEWAY` | Delegate LLM calls to OpenClaw gateway | `false` |
-| `HATCHLING_OPENCLAW_GATEWAY_URL` | Gateway URL | `http://127.0.0.1:18789` |
-| `HATCHLING_OPENCLAW_GATEWAY_TOKEN` | Bearer token for the gateway | *(unset)* |
-| `HATCHLING_OPENCLAW_GATEWAY_MODEL` | Model to request from the gateway (omit to use gateway default) | *(unset)* |
-| `HATCHLING_MAX_TOKENS_PER_CALL` | Per-call token cap | `300` |
-| `HATCHLING_MAX_TOKENS_PER_DAY` | Daily token budget | `10000` |
-| `HATCHLING_TICK_SECONDS` | Background loop interval (seconds, minimum 10) | `60` |
-| `HATCHLING_MIN_REFLECTION_INTERVAL` | Minimum seconds between background reflections | `600` |
-| `HATCHLING_PORT` | Daemon HTTP port | `52780` |
+| `DRAKELING_LLM_BASE_URL` | OpenAI-compatible `/v1` endpoint URL | *(required unless gateway mode)* |
+| `DRAKELING_LLM_API_KEY` | API key for the LLM provider | *(required unless gateway mode)* |
+| `DRAKELING_LLM_MODEL` | Model name (e.g. `gpt-4o-mini`, `llama3.3`) | *(required unless gateway mode)* |
+| `DRAKELING_USE_OPENCLAW_GATEWAY` | Delegate LLM calls to OpenClaw gateway | `false` |
+| `DRAKELING_OPENCLAW_GATEWAY_URL` | Gateway URL | `http://127.0.0.1:18789` |
+| `DRAKELING_OPENCLAW_GATEWAY_TOKEN` | Bearer token for the gateway | *(unset)* |
+| `DRAKELING_OPENCLAW_GATEWAY_MODEL` | Model to request from the gateway (omit to use gateway default) | *(unset)* |
+| `DRAKELING_MAX_TOKENS_PER_CALL` | Per-call token cap | `300` |
+| `DRAKELING_MAX_TOKENS_PER_DAY` | Daily token budget | `10000` |
+| `DRAKELING_TICK_SECONDS` | Background loop interval (seconds, minimum 10) | `60` |
+| `DRAKELING_MIN_REFLECTION_INTERVAL` | Minimum seconds between background reflections | `600` |
+| `DRAKELING_PORT` | Daemon HTTP port | `52780` |
 
 ### LLM configuration
 
@@ -128,17 +128,17 @@ configure one of the following:
 #### Option A — OpenAI cloud
 
 ```dotenv
-HATCHLING_LLM_BASE_URL=https://api.openai.com/v1
-HATCHLING_LLM_API_KEY=sk-...
-HATCHLING_LLM_MODEL=gpt-4o-mini
+DRAKELING_LLM_BASE_URL=https://api.openai.com/v1
+DRAKELING_LLM_API_KEY=sk-...
+DRAKELING_LLM_MODEL=gpt-4o-mini
 ```
 
 #### Option B — Ollama local (free, no data leaves your machine)
 
 ```dotenv
-HATCHLING_LLM_BASE_URL=http://127.0.0.1:11434/v1
-HATCHLING_LLM_API_KEY=ollama-local
-HATCHLING_LLM_MODEL=llama3.3
+DRAKELING_LLM_BASE_URL=http://127.0.0.1:11434/v1
+DRAKELING_LLM_API_KEY=ollama-local
+DRAKELING_LLM_MODEL=llama3.3
 ```
 
 #### Option C — OpenClaw gateway delegation
@@ -148,23 +148,23 @@ supports (cloud or local) becomes available to Hatchling with no additional
 provider configuration.
 
 ```dotenv
-HATCHLING_USE_OPENCLAW_GATEWAY=true
-# HATCHLING_OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789  # only if non-default port
-# HATCHLING_OPENCLAW_GATEWAY_TOKEN=your-gateway-token     # if gateway requires auth
+DRAKELING_USE_OPENCLAW_GATEWAY=true
+# DRAKELING_OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789  # only if non-default port
+# DRAKELING_OPENCLAW_GATEWAY_TOKEN=your-gateway-token     # if gateway requires auth
 ```
 
 ## Export and import
 
 ### Export (backup)
 
-Your creature can be exported as an encrypted `.hatchling` bundle file
+Your creature can be exported as an encrypted `.drakeling` bundle file
 containing the database and identity key.
 
 ```bash
 curl -X POST http://127.0.0.1:52780/export \
-  -H "Authorization: Bearer $(cat ~/.local/share/openclaw-hatchling/api_token)" \
+  -H "Authorization: Bearer $(cat ~/.local/share/drakeling/api_token)" \
   -H "Content-Type: application/json" \
-  -d '{"passphrase": "your-secret-passphrase", "output_path": "/tmp/my-dragon.hatchling"}'
+  -d '{"passphrase": "your-secret-passphrase", "output_path": "/tmp/my-dragon.drakeling"}'
 ```
 
 ### Import (restore / migrate)
@@ -172,16 +172,16 @@ curl -X POST http://127.0.0.1:52780/export \
 To import a bundle onto a new machine, start the daemon in import-ready mode:
 
 ```bash
-openclaw-hatchlingd --allow-import
+drakelingd --allow-import
 ```
 
 Then send the import request:
 
 ```bash
 curl -X POST http://127.0.0.1:52780/import \
-  -H "Authorization: Bearer $(cat ~/.local/share/openclaw-hatchling/api_token)" \
+  -H "Authorization: Bearer $(cat ~/.local/share/drakeling/api_token)" \
   -H "Content-Type: application/json" \
-  -d '{"passphrase": "your-secret-passphrase", "bundle_path": "/tmp/my-dragon.hatchling"}'
+  -d '{"passphrase": "your-secret-passphrase", "bundle_path": "/tmp/my-dragon.drakeling"}'
 ```
 
 The daemon creates a `.bak` backup before importing and rolls back automatically
@@ -190,7 +190,7 @@ if anything goes wrong. After a successful import, restart the daemon normally
 
 ## CLI reference
 
-### `openclaw-hatchlingd`
+### `drakelingd`
 
 | Flag | Description |
 |---|---|
@@ -198,7 +198,7 @@ if anything goes wrong. After a successful import, restart the daemon normally
 | `--dev` | Development mode: verbose stdout logging, no background reflection, import always permitted |
 | `--allow-import` | Enable the `POST /import` endpoint (disabled by default for safety) |
 
-### `openclaw-hatchling`
+### `drakeling`
 
 No flags. Connects to the local daemon and launches the interactive terminal UI.
 
@@ -210,44 +210,44 @@ automatically on login. Template files are provided in `deploy/`.
 ### Linux — systemd
 
 ```bash
-cp deploy/openclaw-hatchling.service ~/.config/systemd/user/
+cp deploy/drakeling.service ~/.config/systemd/user/
 systemctl --user daemon-reload
-systemctl --user enable --now openclaw-hatchling
+systemctl --user enable --now drakeling
 ```
 
-Check status: `systemctl --user status openclaw-hatchling`
+Check status: `systemctl --user status drakeling`
 
 ### macOS — launchd
 
 ```bash
-cp deploy/ai.openclaw.hatchling.plist ~/Library/LaunchAgents/
-launchctl load ~/Library/LaunchAgents/ai.openclaw.hatchling.plist
+cp deploy/drakeling.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/drakeling.plist
 ```
 
 ### Windows — Task Scheduler
 
 ```powershell
-schtasks /create /tn "OpenClaw Hatchling" /tr "openclaw-hatchlingd" /sc onlogon /rl limited /f
+schtasks /create /tn "Drakeling" /tr "drakelingd" /sc onlogon /rl limited /f
 ```
 
-Or import `deploy/openclaw-hatchling-task.xml` via the Task Scheduler GUI.
+Or import `deploy/drakeling-task.xml` via the Task Scheduler GUI.
 
 ## OpenClaw Skill setup
 
 This lets OpenClaw agents check on your hatchling and give it care autonomously.
 
-1. Start the daemon at least once: `openclaw-hatchlingd`
+1. Start the daemon at least once: `drakelingd`
 2. Read the API token:
-   - Linux: `cat ~/.local/share/openclaw-hatchling/api_token`
-   - macOS: `cat ~/Library/Application\ Support/openclaw-hatchling/api_token`
-   - Windows: `type "%APPDATA%\openclaw\openclaw-hatchling\api_token"`
+   - Linux: `cat ~/.local/share/drakeling/api_token`
+   - macOS: `cat ~/Library/Application\ Support/drakeling/api_token`
+   - Windows: `type "%APPDATA%\drakeling\drakeling\api_token"`
 3. Add to your OpenClaw config:
    ```yaml
    skills:
      entries:
-       hatchling:
+       drakeling:
          env:
-           HATCHLING_API_TOKEN: "paste-token-here"
+           DRAKELING_API_TOKEN: "paste-token-here"
    ```
 
 The skill only uses `/status` (read) and `/care` (write). It never calls
@@ -258,8 +258,8 @@ The skill only uses `/status` (read) and `/care` (write). It never calls
 ### Setup
 
 ```bash
-git clone https://github.com/BVisagie/openclaw-hatchling.git
-cd openclaw-hatchling
+git clone https://github.com/BVisagie/drakeling.git
+cd drakeling
 ```
 
 Using pip:
@@ -287,7 +287,7 @@ uv pip install -e ".[dev]"
 ### Running in dev mode
 
 ```bash
-openclaw-hatchlingd --dev
+drakelingd --dev
 ```
 
 Dev mode:
@@ -308,7 +308,7 @@ and API integration tests.
 ### Project structure
 
 ```
-src/openclaw_hatchling/
+src/drakeling/
   domain/         Pure domain logic (models, traits, decay, lifecycle, sprites)
   crypto/         Ed25519 identity, API tokens, encrypted bundles
   storage/        SQLAlchemy models and database init

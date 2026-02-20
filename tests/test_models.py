@@ -1,7 +1,7 @@
 """Tests for domain models."""
 import pytest
 
-from openclaw_hatchling.domain.models import (
+from drakeling.domain.models import (
     CreatureEvent,
     CreatureName,
     DragonColour,

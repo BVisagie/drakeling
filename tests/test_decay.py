@@ -1,10 +1,10 @@
 """Tests for stat decay and boost functions."""
-from openclaw_hatchling.domain.decay import (
+from drakeling.domain.decay import (
     apply_care_boost,
     apply_talk_boost,
     apply_tick_decay,
 )
-from openclaw_hatchling.domain.models import LifecycleStage, MoodState, PersonalityProfile
+from drakeling.domain.models import LifecycleStage, MoodState, PersonalityProfile
 
 
 def _make_mood(**overrides) -> MoodState:

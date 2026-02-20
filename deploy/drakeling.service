@@ -1,0 +1,21 @@
+# Drakeling — systemd user service
+#
+# Install to: ~/.config/systemd/user/drakeling.service
+#
+# Adjust ExecStart if drakelingd is installed to a different path.
+# Secrets and LLM configuration are read from the .env file in the platform
+# data directory (~/.local/share/drakeling/.env). See the README
+# for setup instructions.
+
+[Unit]
+Description=Drakeling daemon
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=%h/.local/bin/drakelingd
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=default.target

@@ -2,14 +2,14 @@
 import tempfile
 from pathlib import Path
 
-from openclaw_hatchling.crypto.bundle import export_bundle, import_bundle, MAGIC, VERSION
-from openclaw_hatchling.crypto.identity import (
+from drakeling.crypto.bundle import export_bundle, import_bundle, MAGIC, VERSION
+from drakeling.crypto.identity import (
     generate_keypair,
     load_private_key,
     save_private_key,
     verify_binding,
 )
-from openclaw_hatchling.crypto.token import ensure_api_token, generate_api_token
+from drakeling.crypto.token import ensure_api_token, generate_api_token
 
 
 class TestIdentity:
@@ -57,7 +57,7 @@ class TestToken:
 
 class TestBundle:
     def _make_data_dir(self, tmp_path: Path) -> Path:
-        (tmp_path / "hatchling.db").write_bytes(b"sqlite-database-bytes")
+        (tmp_path / "drakeling.db").write_bytes(b"sqlite-database-bytes")
         (tmp_path / "identity.key").write_bytes(b"x" * 32)
         return tmp_path
 

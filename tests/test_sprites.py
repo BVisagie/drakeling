@@ -1,6 +1,6 @@
 """Tests for sprite inventory."""
-from openclaw_hatchling.domain.models import DragonColour, LifecycleStage
-from openclaw_hatchling.domain.sprites import get_sprite
+from drakeling.domain.models import DragonColour, LifecycleStage
+from drakeling.domain.sprites import get_sprite
 
 
 class TestSprites:
