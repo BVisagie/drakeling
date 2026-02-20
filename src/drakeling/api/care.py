@@ -9,7 +9,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from drakeling.api.app import get_session, verify_token
-from drakeling.domain.decay import apply_care_boost
+from drakeling.domain.decay import apply_care_boost, apply_feed_boost
 from drakeling.domain.models import LifecycleStage, MoodState, PersonalityProfile
 from drakeling.llm.prompts import build_care_prompt
 from drakeling.storage.models import CreatureStateRow, InteractionLogRow
@@ -21,6 +21,7 @@ class CareType(StrEnum):
     GENTLE_ATTENTION = "gentle_attention"
     REASSURANCE = "reassurance"
     QUIET_PRESENCE = "quiet_presence"
+    FEED = "feed"
 
 
 class CareRequest(BaseModel):
@@ -45,20 +46,27 @@ async def care(
     request: Request,
     session: AsyncSession = Depends(get_session),
 ):
+    from drakeling.api.cooldown import check_care_cooldown, record_care
+
+    remaining = check_care_cooldown()
+    if remaining is not None:
+        return {"cooldown_remaining": round(remaining, 1)}
+
     result = await session.execute(select(CreatureStateRow).limit(1))
     row = result.scalar_one_or_none()
     if row is None:
         raise HTTPException(status_code=404, detail="No creature exists")
 
+    record_care()
     now = time.time()
 
-    # Apply stat boost
     mood = MoodState(
         mood=row.mood, energy=row.energy, trust=row.trust,
         trust_floor=row.trust_floor, loneliness=row.loneliness,
         state_curiosity=row.state_curiosity, stability=row.stability,
     )
-    new_mood = apply_care_boost(mood)
+    boost = apply_feed_boost if body.type == CareType.FEED else apply_care_boost
+    new_mood = boost(mood)
     row.mood = new_mood.mood
     row.energy = new_mood.energy
     row.trust = new_mood.trust

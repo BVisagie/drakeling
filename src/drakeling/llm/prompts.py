@@ -79,15 +79,16 @@ def build_system_prompt(creature: Creature) -> str:
 
 def build_care_prompt(creature: Creature, care_type: str) -> list[dict[str, str]]:
     system = build_system_prompt(creature)
-    care_desc = care_type.replace("_", " ")
+    if care_type == "feed":
+        action_desc = "The person who cares for you just fed you."
+    else:
+        care_desc = care_type.replace("_", " ")
+        action_desc = f"The person who cares for you just offered you {care_desc}."
     return [
         {"role": "system", "content": system},
         {
             "role": "user",
-            "content": (
-                f"The person who cares for you just offered you {care_desc}. "
-                "Respond briefly with how you feel."
-            ),
+            "content": f"{action_desc} Respond briefly with how you feel.",
         },
     ]
 

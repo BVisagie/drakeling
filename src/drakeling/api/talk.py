@@ -36,10 +36,18 @@ async def talk(
     request: Request,
     session: AsyncSession = Depends(get_session),
 ):
+    from drakeling.api.cooldown import check_talk_cooldown, record_talk
+
+    remaining = check_talk_cooldown()
+    if remaining is not None:
+        return {"cooldown_remaining": round(remaining, 1)}
+
     result = await session.execute(select(CreatureStateRow).limit(1))
     row = result.scalar_one_or_none()
     if row is None:
         raise HTTPException(status_code=404, detail="No creature exists")
+
+    record_talk()
 
     if row.lifecycle_stage == LifecycleStage.EGG.value:
         raise HTTPException(

@@ -61,6 +61,16 @@ def apply_care_boost(state: MoodState) -> MoodState:
     )
 
 
+def apply_feed_boost(state: MoodState) -> MoodState:
+    """Apply stat effects of a feed event (energy-focused care)."""
+    return replace(
+        state,
+        energy=_clamp(state.energy + 0.08),
+        mood=_clamp(state.mood + 0.03),
+        loneliness=0.0,
+    )
+
+
 def apply_talk_boost(state: MoodState, traits: PersonalityProfile) -> MoodState:
     """Apply stat effects of a talk interaction."""
     trust = _clamp(state.trust + 0.02)

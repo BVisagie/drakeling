@@ -55,9 +55,11 @@ class MainScreen(Screen):
     """Primary creature status and interaction screen."""
 
     BINDINGS: ClassVar[list[Binding]] = [
+        Binding("f1", "help", "Help"),
         Binding("f2", "care_menu", "Care"),
         Binding("f3", "rest", "Rest"),
         Binding("f4", "focus_input", "Talk"),
+        Binding("f5", "feed", "Feed"),
         Binding("f8", "release", "Release"),
         Binding("q", "quit", "Quit"),
     ]
@@ -168,6 +170,10 @@ class MainScreen(Screen):
         feed = self.query_one("#feed", InteractionFeed)
         try:
             result = await self._client.talk(message)
+            if "cooldown_remaining" in result:
+                secs = int(result["cooldown_remaining"])
+                feed.add_system_note(f"(give them a moment... {secs}s)")
+                return
             response = result.get("response")
             if response:
                 feed.add_creature_message(response, self._colour.hex_tint)
@@ -182,12 +188,19 @@ class MainScreen(Screen):
     def action_care_menu(self) -> None:
         self._do_care("gentle_attention")
 
+    def action_feed(self) -> None:
+        self._do_care("feed")
+
     @work(thread=False)
     async def _do_care(self, care_type: str) -> None:
         feed = self.query_one("#feed", InteractionFeed)
         feed.add_system_note(f"you offer {care_type.replace('_', ' ')}...")
         try:
             result = await self._client.care(care_type)
+            if "cooldown_remaining" in result:
+                secs = int(result["cooldown_remaining"])
+                feed.add_system_note(f"(give them a moment... {secs}s)")
+                return
             response = result.get("response")
             if response:
                 feed.add_creature_message(response, self._colour.hex_tint)
@@ -211,6 +224,11 @@ class MainScreen(Screen):
             feed.add_system_note("your creature is resting")
         except Exception as exc:
             feed.add_system_note(f"(could not rest: {exc})")
+
+    def action_help(self) -> None:
+        from drakeling.ui.help import HelpScreen
+
+        self.app.push_screen(HelpScreen())
 
     def action_focus_input(self) -> None:
         self.query_one("#talk-input", Input).focus()
