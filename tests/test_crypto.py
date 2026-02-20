@@ -45,10 +45,13 @@ class TestToken:
         assert set(token).issubset(allowed)
 
     def test_ensure_creates_and_returns(self, tmp_path):
-        token = ensure_api_token(tmp_path)
+        token, created = ensure_api_token(tmp_path)
         assert len(token) > 0
-        # Second call returns same token
-        assert ensure_api_token(tmp_path) == token
+        assert created is True
+        # Second call returns same token, not created
+        token2, created2 = ensure_api_token(tmp_path)
+        assert token2 == token
+        assert created2 is False
 
     def test_ensure_file_exists(self, tmp_path):
         ensure_api_token(tmp_path)

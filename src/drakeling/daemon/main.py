@@ -6,6 +6,8 @@ import sys
 
 import uvicorn
 
+import platform
+
 from drakeling.crypto.token import ensure_api_token
 from drakeling.daemon.config import DrakelingConfig, load_dotenv_from_data_dir
 from drakeling.daemon.setup import check_llm_setup
@@ -30,6 +32,27 @@ def _parse_args() -> argparse.Namespace:
     return parser.parse_args()
 
 
+def _print_token_info(token_path, token: str) -> None:
+    """Print API token and location on first run."""
+    path_str = str(token_path)
+    if platform.system() == "Windows":
+        view_cmd = f'type "{path_str}"'
+    else:
+        view_cmd = f'cat "{path_str}"'
+    print(
+        "\n"
+        "  API token created:\n"
+        f"    {token}\n"
+        "\n"
+        "  Saved to: " + path_str + "\n"
+        "  To view later: " + view_cmd + "\n"
+        "\n"
+        "  The drakeling TUI reads this automatically.\n"
+        "  For OpenClaw Skill, add it to ~/.openclaw/openclaw.json\n",
+        file=sys.stderr,
+    )
+
+
 async def _startup() -> None:
     args = _parse_args()
     data_dir = get_data_dir()
@@ -42,7 +65,11 @@ async def _startup() -> None:
 
     check_llm_setup(config, data_dir)
 
-    api_token = ensure_api_token(data_dir)
+    api_token, token_just_created = ensure_api_token(data_dir)
+    token_path = data_dir / "api_token"
+
+    if token_just_created and not config.dev_mode:
+        _print_token_info(token_path, api_token)
 
     engine = get_engine(data_dir)
     await run_migrations(engine)
