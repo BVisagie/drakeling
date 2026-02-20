@@ -261,7 +261,7 @@ class MainScreen(Screen):
             self.dismiss("released")
 
 
-class HatchlingApp(App):
+class DrakelingApp(App):
     """Terminal UI entry point for Drakeling."""
 
     TITLE = "Drakeling"
@@ -360,7 +360,7 @@ def main() -> None:
         )
         sys.exit(0)
 
-    app = HatchlingApp()
+    app = DrakelingApp()
     app.run()
 
 

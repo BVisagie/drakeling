@@ -98,7 +98,7 @@ async def do_import(
     # Backup existing DB if force overwrite
     if existing is not None:
         timestamp = time.strftime("%Y%m%d_%H%M%S")
-        bak_path = data_dir / f"hatchling_{timestamp}.bak"
+        bak_path = data_dir / f"drakeling_{timestamp}.bak"
         shutil.copy2(db_path, bak_path)
 
     # Install imported data

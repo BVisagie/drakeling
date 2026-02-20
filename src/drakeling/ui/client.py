@@ -14,13 +14,13 @@ class DaemonNotAvailable(Exception):
 
 
 class DrakelingClient:
-    """Thin HTTP client for the Hatchling daemon API."""
+    """Thin HTTP client for the Drakeling daemon API."""
 
     def __init__(self, *, base_url: str | None = None, data_dir: Path | None = None):
         self._data_dir = data_dir or get_data_dir()
 
         import os
-        port = int(os.environ.get("HATCHLING_PORT", "52780"))
+        port = int(os.environ.get("DRAKELING_PORT", "52780"))
         self._base_url = base_url or f"http://127.0.0.1:{port}"
         self._client: httpx.AsyncClient | None = None
 
@@ -34,7 +34,7 @@ class DrakelingClient:
         if self._client is None:
             if self._token is None:
                 raise DaemonNotAvailable(
-                    "The Hatchling daemon has not been started yet.\n"
+                    "The Drakeling daemon has not been started yet.\n"
                     "Start it first:  drakelingd"
                 )
             self._client = httpx.AsyncClient(

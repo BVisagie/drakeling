@@ -1,8 +1,12 @@
 # Drakeling
 
+<p align="center">
+  <img src="docs/mascot.png" alt="Drakeling mascot" width="280">
+</p>
+
 A local, lightweight, learning-only companion creature. Drakeling may optionally be linked to the OpenClaw ecosystem.
 
-Hatchling is a small digital dragon that lives on your machine. It reflects,
+Drakeling is a small digital dragon that lives on your machine. It reflects,
 learns about you, and expresses feelings — but never performs tasks, accesses
 files, or reaches the network. Safe by architecture.
 
@@ -69,7 +73,7 @@ drakeling
 
 If no creature exists, the UI walks you through the **birth ceremony**: pick a
 colour, optionally re-roll up to 3 times, name your dragon, and confirm. Your
-hatchling starts as an egg and progresses through lifecycle stages as you
+drakeling starts as an egg and progresses through lifecycle stages as you
 interact with it.
 
 ### 3. Interact
@@ -304,7 +308,7 @@ Or import `deploy/drakeling-task.xml` via the Task Scheduler GUI.
 
 ## OpenClaw Skill setup
 
-This lets OpenClaw agents check on your hatchling and give it care autonomously.
+This lets OpenClaw agents check on your drakeling and give it care autonomously.
 
 1. Install the skill: `clawhub install drakeling` (or copy `skill/` to `~/.openclaw/skills/drakeling/`)
 2. Start the daemon at least once: `drakelingd`

@@ -784,7 +784,7 @@ The LLM must not be given any system instructions that allow tool use.
 
 OpenClaw integration is strictly external. No OpenClaw code may be imported by this project.
 
-The correct integration mechanism for this project is an **OpenClaw Skill** — a plain directory containing a `SKILL.md` file with YAML frontmatter and markdown instructions. The Skill teaches the OpenClaw agent how to reach the Hatchling daemon's two externally-safe endpoints (`POST /care` and `GET /status`) using standard HTTP. No in-process plugin, no shared runtime, no OpenClaw SDK.
+The correct integration mechanism for this project is an **OpenClaw Skill** — a plain directory containing a `SKILL.md` file with YAML frontmatter and markdown instructions. The Skill teaches the OpenClaw agent how to reach the Drakeling daemon's two externally-safe endpoints (`POST /care` and `GET /status`) using standard HTTP. No in-process plugin, no shared runtime, no OpenClaw SDK.
 
 ### 19.1 Skill directory
 
@@ -810,7 +810,7 @@ The frontmatter must declare:
 ---
 name: drakeling
 version: 1.0.0
-description: Check on your Hatchling companion creature, send it care, or see how it is feeling. Use when the user mentions their hatchling, companion creature, or wants to check in on or care for their creature.
+description: Check on your Drakeling companion creature, send it care, or see how it is feeling. Use when the user mentions their drakeling, companion creature, or wants to check in on or care for their creature.
 author: drakeling
 metadata:
   clawdbot:
@@ -818,7 +818,7 @@ metadata:
     requires:
       env:
         - name: DRAKELING_API_TOKEN
-          description: Bearer token for the local Hatchling daemon. Found in the Hatchling data directory as `api_token`.
+          description: Bearer token for the local Drakeling daemon. Found in the Drakeling data directory as `api_token`.
       network:
         - localhost
 permissions:
@@ -828,16 +828,16 @@ permissions:
 
 Key requirements for the frontmatter:
 
-- `description` is used by OpenClaw as a trigger phrase. It must be written in plain language matching how a user would naturally ask about their creature (e.g. "how is my hatchling", "give my creature some attention", "check on my companion"). Do not write marketing copy.
+- `description` is used by OpenClaw as a trigger phrase. It must be written in plain language matching how a user would naturally ask about their creature (e.g. "how is my drakeling", "give my creature some attention", "check on my companion"). Do not write marketing copy.
 - `metadata.clawdbot` is the preferred metadata namespace (`metadata.openclaw` is an accepted alias).
 - `permissions` must declare `network:outbound`. Do not declare filesystem, shell, or any other permission — ClawHub reviewers will reject skills with excessive permissions.
-- The `DRAKELING_API_TOKEN` environment variable must be documented in `requires.env`. The user must set this variable in their OpenClaw environment config (`skills.entries.drakeling.env`) pointing to the value read from the `api_token` file in the Hatchling data directory.
+- The `DRAKELING_API_TOKEN` environment variable must be documented in `requires.env`. The user must set this variable in their OpenClaw environment config (`skills.entries.drakeling.env`) pointing to the value read from the `api_token` file in the Drakeling data directory.
 
 ### 19.3 Skill instructions
 
 Below the frontmatter, the `SKILL.md` must provide clear, concise instructions for the agent. The instructions must cover:
 
-**Daemon address**: The Hatchling daemon listens on `http://127.0.0.1:52780` by default. If the user has configured a custom port via `DRAKELING_PORT`, use that value instead.
+**Daemon address**: The Drakeling daemon listens on `http://127.0.0.1:52780` by default. If the user has configured a custom port via `DRAKELING_PORT`, use that value instead.
 
 **Authentication**: Every request must include the header `Authorization: Bearer $DRAKELING_API_TOKEN`.
 
@@ -934,7 +934,7 @@ All configuration is read from environment variables. In addition, the daemon mu
 
 ### 23.1 LLM provider abstraction
 
-Hatchling is model-agnostic. The LLM wrapper must call any OpenAI-compatible `/v1/chat/completions` endpoint using `httpx`. No provider-specific SDK may be imported. The entire provider surface is three environment variables: a base URL, an API key, and a model name. This single interface covers every supported backend without any provider-switching logic in the code.
+Drakeling is model-agnostic. The LLM wrapper must call any OpenAI-compatible `/v1/chat/completions` endpoint using `httpx`. No provider-specific SDK may be imported. The entire provider surface is three environment variables: a base URL, an API key, and a model name. This single interface covers every supported backend without any provider-switching logic in the code.
 
 Supported backends out of the box:
 
@@ -1026,18 +1026,18 @@ The terminal UI client (`drakeling`) reads the `api_token` file automatically an
 
 ### 23.5 OpenClaw gateway delegation mode
 
-When `DRAKELING_USE_OPENCLAW_GATEWAY=true`, Hatchling delegates all LLM calls to the local OpenClaw gateway rather than calling a provider directly. This is the recommended configuration for users who already run OpenClaw, because it means:
+When `DRAKELING_USE_OPENCLAW_GATEWAY=true`, Drakeling delegates all LLM calls to the local OpenClaw gateway rather than calling a provider directly. This is the recommended configuration for users who already run OpenClaw, because it means:
 
 - Model configuration lives in one place (OpenClaw's `openclaw.json`)
-- Any model OpenClaw supports — cloud or local, Ollama, LM Studio, or otherwise — is automatically available to Hatchling with no additional configuration
-- Local Ollama models already configured in OpenClaw work for Hatchling at zero additional cost
+- Any model OpenClaw supports — cloud or local, Ollama, LM Studio, or otherwise — is automatically available to Drakeling with no additional configuration
+- Local Ollama models already configured in OpenClaw work for Drakeling at zero additional cost
 - The user benefits from OpenClaw's existing fallback and model routing logic
 
-In this mode, the LLM wrapper sends requests to the OpenClaw gateway's local HTTP endpoint. The gateway routes the call through its own provider configuration and returns a standard completion response. Hatchling treats this identically to a direct provider call — the abstraction is transparent.
+In this mode, the LLM wrapper sends requests to the OpenClaw gateway's local HTTP endpoint. The gateway routes the call through its own provider configuration and returns a standard completion response. Drakeling treats this identically to a direct provider call — the abstraction is transparent.
 
 **Model name in gateway mode**: If `DRAKELING_OPENCLAW_GATEWAY_MODEL` is set, its value is included as the `model` field in the `/v1/chat/completions` request body, allowing you to target a specific model configured in OpenClaw (e.g. `ollama/llama3.3`). If it is not set, the `model` field is omitted entirely and the OpenClaw gateway uses its configured default model. This is the recommended default behaviour for most users.
 
-**Important constraint**: Even in gateway delegation mode, Hatchling's own per-call token cap and daily budget enforcement remain fully active. The budget is tracked by Hatchling, not by OpenClaw. The two systems' token accounting are independent.
+**Important constraint**: Even in gateway delegation mode, Drakeling's own per-call token cap and daily budget enforcement remain fully active. The budget is tracked by Drakeling, not by OpenClaw. The two systems' token accounting are independent.
 
 **Startup validation**: At daemon startup, if `DRAKELING_USE_OPENCLAW_GATEWAY=true`, the daemon must attempt a lightweight health check against the gateway URL. If the gateway is unreachable, the daemon must log a clear warning but continue starting — the creature should not be held hostage to OpenClaw's availability. LLM calls will fail gracefully (the same path as budget exhaustion) until the gateway becomes reachable.
 
@@ -1057,7 +1057,7 @@ Create `~/.config/systemd/user/drakeling.service`:
 
 ```ini
 [Unit]
-Description=OpenClaw Hatchling daemon
+Description=Drakeling daemon
 After=network.target
 
 [Service]
@@ -1120,7 +1120,7 @@ Secrets are read from the `.env` file in the platform data directory (Section 23
 Create a basic task using `schtasks`:
 
 ```powershell
-schtasks /create /tn "OpenClaw Hatchling" /tr "drakelingd" /sc onlogon /rl limited /f
+schtasks /create /tn "Drakeling" /tr "drakelingd" /sc onlogon /rl limited /f
 ```
 
 Alternatively, use Task Scheduler GUI: trigger "At log on", action "Start a program: drakelingd", run only when user is logged on.

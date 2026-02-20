@@ -1,4 +1,4 @@
-# Hatchling API Reference (Skill-Permitted Endpoints)
+# Drakeling API Reference (Skill-Permitted Endpoints)
 
 ## GET /status
 

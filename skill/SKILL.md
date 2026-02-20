@@ -1,7 +1,7 @@
 ---
 name: drakeling
-version: 1.0.1
-description: Check on your Hatchling companion creature, send it care, or see how it is feeling. Use when the user mentions their hatchling, companion creature, or wants to check in on or care for their creature.
+version: 1.0.2
+description: Check on your Drakeling companion creature, send it care, or see how it is feeling. Use when the user mentions their drakeling, companion creature, or wants to check in on or care for their creature.
 author: drakeling
 metadata:
   clawdbot:
@@ -25,7 +25,7 @@ permissions:
 
 # Drakeling Companion Skill
 
-You can check on the user's Hatchling companion creature and send it care.
+You can check on the user's Drakeling companion creature and send it care.
 
 ## Daemon address
 
