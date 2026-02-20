@@ -2,93 +2,99 @@
 
 6 unique glyph designs, 30 named constants (one per stage per colour).
 Colour tinting is applied at render time by the UI, not baked in.
+
+Anatomy conventions (consistent across all dragon stages):
+  horn -> brow ridge -> eye socket -> snout (omega glyph)
+  Head width scales with stage: hatched < juvenile < mature.
+  Wings are bat/wyvern style with visible shoulder joints.
 """
 from __future__ import annotations
 
 from drakeling.domain.models import DragonColour, LifecycleStage
 
 # ---------------------------------------------------------------------------
-# Base sprite designs (8-12 lines, 16-20 chars wide)
+# Base sprite designs (9-13 lines, 14-22 chars wide)
 # ---------------------------------------------------------------------------
 
 _SPRITE_EGG = r"""
       .---.
-    /       \
-   |  * . *  |
+    /  . *  \
+   |  *   .  |
+   | .  *  * |
+   |   *  .  |
+   | .   * . |
+   |  *  .   |
    | .  *  . |
-   |  *   *  |
-   | .  * .  |
-   |  * . *  |
-    \       /
-      '---'
+    \_______/
 """.strip("\n")
 
 _SPRITE_HATCHED = r"""
-      .---.
-    / _____ \
-   | /     \ |
-   |/ ^   ^ \|
-    \  ._.  /
-     |     |---
-     | === |
-      \   /
-       '-'
+      /\ /\
+     /=====\
+     | ^ ^ |
+      \ ω /
+    .-'---'-.
+   |  * . *  |
+   | .  *  . |
+    \___|___/
+        ~
 """.strip("\n")
 
 _SPRITE_JUVENILE = r"""
-       /\
-      /  \
-     / ^^ \
-    |  O O  |
-    |  ._.  |
-   /|       |\
-  / |  ~~~  | \
- <  |       |  >
-    |  / \  |
-    | /   \ |
-     /     \
+       /\   /\
+      /=======\
+      | ^   ^ |
+       \  ω  /
+       | ^^ |
+      /|~~~~|\
+  _,-/ |====| \-,_
+ /     |~~~~|     \
+       |    |
+       /    \
+       V    V
 """.strip("\n")
 
 _SPRITE_MATURE = r"""
-        /\    /\
-       /  \  /  \
-      / ^^ \/ ^^ \
-     |    O  O    |
-     |    .__.    |
-    /|            |\
-   / |   ~~~~~~   | \
-  <  |            |  >
-   \ |    /  \    | /
-    \|   /    \   |/
-     |  /      \  |
-      \/        \/
+      /\      /\
+     /==========\
+     |  ^    ^  |
+      \   ω   /
+       \  ^^  /
+        \ || /
+  _,--/ |~~~~| \--,_
+ /  ,-/ |====| \-,  \
+/  /    |~~~~|    \  \
+     \  |    |  /
+      \ | /\ | /
+       \|/  \|/
+        V<==>V
 """.strip("\n")
 
 _SPRITE_RESTING = r"""
-           __
-    /\    /  }
-   /  \--/  /
-  / ^^ __ \/
- |  - -   |
-  \ .__.  \
-   \~~~~~~ \
-    \       }
-     \  ~  /
-      '---'
+           ___
+    /\ /\ /   }
+   /=====\/   /
+  | --  ω   \/
+   \ .===.  /
+    \~~~~~  \
+     \ /--\  \
+      \       }
+       \  ~  /
+        '---'
 """.strip("\n")
 
 _SPRITE_EXHAUSTED = r"""
-        /\    /\
-       /  \  /  \
-      / -- \/ -- \
-     |    -  -    |
-     |    .__.    |
-    /|            |\
-   v |   ......   | v
-     |            |
-     |    /  \    |
-      \  /    \  /
-       \/      \/
+      /\      /\
+     /==========\
+     |  -    -  |
+      \   ω   /
+      \_______/
+      |  ~~~~  |
+ _,--|  ======  |--,_
+ |   |  ~~~~~~  |   |
+ |   |   /  \   |   |
+ v    \ /    \ /    v
+       V      V
 """.strip("\n")
 
 # ---------------------------------------------------------------------------
