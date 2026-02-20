@@ -40,6 +40,8 @@ After installation, two commands are available:
 
 ## Getting started
 
+**Order matters:** Start the daemon first, then the UI in a separate terminal.
+
 ### 1. Start the daemon
 
 ```bash

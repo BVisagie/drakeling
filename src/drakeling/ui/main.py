@@ -35,9 +35,11 @@ class DaemonUnavailableScreen(Screen):
                 yield Static(
                     "[bold]Could not connect to the Drakeling daemon.[/]\n\n"
                     f"{self._reason}\n\n"
-                    "Start the daemon in another terminal:\n\n"
-                    "  [bold green]drakelingd[/]\n\n"
-                    "Then press [bold]R[/] to retry.",
+                    "1. Start the daemon first:\n\n"
+                    "   [bold green]drakelingd[/]\n\n"
+                    "2. Then run this again:\n\n"
+                    "   [bold green]drakeling[/]\n\n"
+                    "Press [bold]R[/] to retry  ·  [bold]Q[/] to quit",
                     id="error-message",
                 )
         yield Footer()
@@ -313,6 +315,18 @@ class HatchlingApp(App):
 
 
 def main() -> None:
+    import sys
+
+    if "--help" in sys.argv or "-h" in sys.argv:
+        print(
+            "Usage: drakeling\n"
+            "\n"
+            "Connects to the local Drakeling daemon.\n"
+            "Start the daemon first: drakelingd\n"
+            "Then run: drakeling"
+        )
+        sys.exit(0)
+
     app = HatchlingApp()
     app.run()
 

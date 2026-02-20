@@ -136,6 +136,7 @@ async def _startup() -> None:
         log_level="info" if config.dev_mode else "warning",
     )
     server = uvicorn.Server(server_config)
+    print("Drakeling daemon ready. In another terminal, run: drakeling")
     try:
         await server.serve()
     finally:
