@@ -5,16 +5,48 @@ from typing import ClassVar
 from textual import on, work
 from textual.app import App, ComposeResult
 from textual.binding import Binding
-from textual.containers import Horizontal, Vertical
+from textual.containers import Center, Horizontal, Vertical
 from textual.screen import Screen
-from textual.widgets import Footer, Header, Input, Label
+from textual.widgets import Footer, Header, Input, Label, Static
 
 from openclaw_hatchling.domain.models import DragonColour, LifecycleStage
-from openclaw_hatchling.ui.client import HatchlingClient
+from openclaw_hatchling.ui.client import DaemonNotAvailable, HatchlingClient
 from openclaw_hatchling.ui.widgets.feed import InteractionFeed
 from openclaw_hatchling.ui.widgets.input_bar import InputBar
 from openclaw_hatchling.ui.widgets.sprite_panel import SpritePanel
 from openclaw_hatchling.ui.widgets.stats_display import StatsDisplay
+
+
+class DaemonUnavailableScreen(Screen):
+    """Shown when the daemon is not running or not yet initialised."""
+
+    BINDINGS: ClassVar[list[Binding]] = [
+        Binding("r", "retry", "Retry"),
+        Binding("q", "quit", "Quit"),
+    ]
+
+    def __init__(self, reason: str) -> None:
+        super().__init__()
+        self._reason = reason
+
+    def compose(self) -> ComposeResult:
+        with Center():
+            with Vertical():
+                yield Static(
+                    "[bold]Could not connect to the Hatchling daemon.[/]\n\n"
+                    f"{self._reason}\n\n"
+                    "Start the daemon in another terminal:\n\n"
+                    "  [bold green]openclaw-hatchlingd[/]\n\n"
+                    "Then press [bold]R[/] to retry.",
+                    id="error-message",
+                )
+        yield Footer()
+
+    def action_retry(self) -> None:
+        self.dismiss("retry")
+
+    def action_quit(self) -> None:
+        self.app.exit()
 
 
 class MainScreen(Screen):
@@ -195,6 +227,32 @@ class HatchlingApp(App):
         self._client = HatchlingClient()
 
     async def on_mount(self) -> None:
+        await self._try_connect()
+
+    async def _try_connect(self) -> None:
+        """Attempt to reach the daemon; show error screen or proceed."""
+        self._client.reload_token()
+
+        if not self._client.has_token:
+            self.push_screen(
+                DaemonUnavailableScreen(
+                    "No API token found — the daemon has not been started yet."
+                ),
+                callback=self._on_error_dismissed,
+            )
+            return
+
+        reachable = await self._client.ping()
+        if not reachable:
+            self.push_screen(
+                DaemonUnavailableScreen(
+                    "The daemon is not responding on "
+                    f"{self._client._base_url}."
+                ),
+                callback=self._on_error_dismissed,
+            )
+            return
+
         try:
             status = await self._client.get_status()
         except Exception:
@@ -203,12 +261,19 @@ class HatchlingApp(App):
         if status is None:
             from openclaw_hatchling.ui.birth import BirthScreen
 
-            def _on_birth_dismissed(result: object = None) -> None:
-                self.run_worker(self._show_main())
-
-            self.push_screen(BirthScreen(self._client), callback=_on_birth_dismissed)
+            self.push_screen(
+                BirthScreen(self._client),
+                callback=self._on_birth_dismissed,
+            )
         else:
             self.push_screen(MainScreen(self._client, status))
+
+    def _on_error_dismissed(self, result: object = None) -> None:
+        if result == "retry":
+            self.run_worker(self._try_connect())
+
+    def _on_birth_dismissed(self, result: object = None) -> None:
+        self.run_worker(self._show_main())
 
     async def _show_main(self) -> None:
         status = await self._client.get_status()
