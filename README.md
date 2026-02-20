@@ -95,6 +95,60 @@ Contents:
 | `api_token` | Bearer token for authenticating API requests |
 | `.env` | Optional — environment variable overrides (see below) |
 
+## Upgrading, uninstalling, and reinstalling
+
+### Upgrading (keep your creature)
+
+To update the app and keep your creature data:
+
+| Installer | Command |
+|---|---|
+| pipx | `pipx upgrade drakeling` |
+| pip | `pip install --upgrade drakeling` |
+| uv | `uv tool upgrade drakeling` |
+
+Restart the daemon after upgrading.
+
+### Uninstalling
+
+1. Stop the daemon (Ctrl+C or stop the service).
+2. Uninstall the app:
+
+| Installer | Command |
+|---|---|
+| pipx | `pipx uninstall drakeling` |
+| pip | `pip uninstall drakeling` |
+| uv | `uv tool uninstall drakeling` |
+
+### Removing creature data
+
+To delete your creature and all local data (database, identity key, exports), remove the data directory:
+
+| Platform | Command |
+|---|---|
+| Linux | `rm -rf ~/.local/share/drakeling` |
+| macOS | `rm -rf ~/Library/Application\ Support/drakeling` |
+| Windows | `rmdir /s /q "%APPDATA%\drakeling\drakeling"` |
+
+### Clean reinstall (start from scratch)
+
+Uninstall the app, remove the data directory (commands above), then install again.
+
+**Linux / macOS (pipx):**
+```bash
+pipx uninstall drakeling
+rm -rf ~/.local/share/drakeling          # Linux
+# or: rm -rf ~/Library/Application\ Support/drakeling  # macOS
+pipx install drakeling
+```
+
+**Windows (pipx, Command Prompt or PowerShell):**
+```cmd
+pipx uninstall drakeling
+rmdir /s /q "%APPDATA%\drakeling\drakeling"
+pipx install drakeling
+```
+
 ## Configuration
 
 The daemon reads configuration from environment variables. For persistent
