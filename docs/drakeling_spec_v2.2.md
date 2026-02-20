@@ -796,6 +796,7 @@ drakeling/
     SKILL.md
     references/
       api.md
+      setup.md
 ```
 
 Users install the skill by dropping the `skill/` directory into `~/.openclaw/skills/drakeling/` or their workspace `skills/drakeling/` directory, then starting a new OpenClaw session. It can also be published to ClawHub for one-command installation.
@@ -812,6 +813,7 @@ name: drakeling
 version: 1.0.0
 description: Check on your Drakeling companion creature, send it care, or see how it is feeling. Use when the user mentions their drakeling, companion creature, or wants to check in on or care for their creature.
 author: drakeling
+homepage: https://github.com/BVisagie/drakeling
 metadata:
   clawdbot:
     emoji: "🥚"
@@ -819,8 +821,17 @@ metadata:
       env:
         - name: DRAKELING_API_TOKEN
           description: Bearer token for the local Drakeling daemon. Found in the Drakeling data directory as `api_token`.
+        - name: DRAKELING_PORT
+          description: Optional. Port the Drakeling daemon listens on. Defaults to 52780.
       network:
         - localhost
+  openclaw:
+    emoji: "🥚"
+    primaryEnv: DRAKELING_API_TOKEN
+    homepage: "https://github.com/BVisagie/drakeling"
+    requires:
+      env: ["DRAKELING_API_TOKEN"]
+      bins: ["drakelingd"]
 permissions:
   - network:outbound
 ---
@@ -829,13 +840,19 @@ permissions:
 Key requirements for the frontmatter:
 
 - `description` is used by OpenClaw as a trigger phrase. It must be written in plain language matching how a user would naturally ask about their creature (e.g. "how is my drakeling", "give my creature some attention", "check on my companion"). Do not write marketing copy.
-- `metadata.clawdbot` is the preferred metadata namespace (`metadata.openclaw` is an accepted alias).
+- `homepage` must point to the public repository. It is surfaced as a "Website" link in the OpenClaw Skills UI, giving users a path to full documentation and setup instructions.
+- `metadata.clawdbot` is the preferred metadata namespace (`metadata.openclaw` is an accepted alias). Both should be declared for compatibility.
+- `metadata.openclaw.requires.bins` must list `["drakelingd"]`. This gates the skill at load time so it only appears when the Drakeling package is installed. Without this, users would see confusing connection errors.
+- `metadata.openclaw.requires.env` must list only `["DRAKELING_API_TOKEN"]`. Do not include `DRAKELING_PORT` here — it is optional and has a default. The `requires.env` gate rejects the skill if the variable is not set.
+- `metadata.openclaw.homepage` should match the top-level `homepage` field.
 - `permissions` must declare `network:outbound`. Do not declare filesystem, shell, or any other permission — ClawHub reviewers will reject skills with excessive permissions.
-- The `DRAKELING_API_TOKEN` environment variable must be documented in `requires.env`. The user must set this variable in their OpenClaw environment config (`skills.entries.drakeling.env`) pointing to the value read from the `api_token` file in the Drakeling data directory.
+- The `DRAKELING_API_TOKEN` environment variable must be documented in `requires.env` under both `clawdbot` and `openclaw`. The user must set this variable in their OpenClaw environment config (`skills.entries.drakeling.env`) pointing to the value read from the `api_token` file in the Drakeling data directory.
 
 ### 19.3 Skill instructions
 
 Below the frontmatter, the `SKILL.md` must provide clear, concise instructions for the agent. The instructions must cover:
+
+**Prerequisites and setup**: A brief section listing the steps a user must complete before the skill can function: install the Drakeling package, start the daemon, retrieve the API token, and configure it in OpenClaw. This section serves dual purpose — it is shown to humans browsing the ClawHub listing page and is available to agents when helping users troubleshoot setup. It must include a link to the full documentation at the public repository homepage.
 
 **Daemon address**: The Drakeling daemon listens on `http://127.0.0.1:52780` by default. If the user has configured a custom port via `DRAKELING_PORT`, use that value instead.
 
@@ -853,9 +870,13 @@ Valid `care_type` values are `gentle_attention`, `reassurance`, and `quiet_prese
 
 **What not to do**: Do not call `/talk`, `/rest`, `/export`, `/import`, or any other endpoint. These are reserved for the terminal UI or administrative use. Do not mention tokens, prompts, models, or any internal system detail to the user.
 
-### 19.4 Reference file
+### 19.4 Reference files
 
-The `skill/references/api.md` file must contain a concise reference of the two permitted endpoints (`GET /status`, `POST /care`) including example request and response JSON. This file is available to the agent as supplementary grounding but is not injected into every prompt.
+The `skill/references/` directory must contain the following files. These are available to the agent as supplementary grounding but are not injected into every prompt.
+
+**`api.md`**: A concise reference of the two permitted endpoints (`GET /status`, `POST /care`) including example request and response JSON.
+
+**`setup.md`**: A detailed, human-readable setup guide covering all platforms (Linux, macOS, Windows). It must include: package installation options, daemon first-run steps, API token retrieval paths per platform, OpenClaw config examples (both `skills.entries` and top-level `env` fallback), custom port configuration, troubleshooting for common errors (skill not loading, 403, connection refused, doctor stripping config), and a link to the full documentation. This file ships with `clawhub install` and gives agents detailed instructions for guiding users through setup.
 
 ### 19.5 ClawHub publication
 

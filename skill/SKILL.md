@@ -1,8 +1,9 @@
 ---
 name: drakeling
-version: 1.0.2
+version: 1.0.3
 description: Check on your Drakeling companion creature, send it care, or see how it is feeling. Use when the user mentions their drakeling, companion creature, or wants to check in on or care for their creature.
 author: drakeling
+homepage: https://github.com/BVisagie/drakeling
 metadata:
   clawdbot:
     emoji: "🥚"
@@ -17,8 +18,10 @@ metadata:
   openclaw:
     emoji: "🥚"
     primaryEnv: DRAKELING_API_TOKEN
+    homepage: "https://github.com/BVisagie/drakeling"
     requires:
-      env: ["DRAKELING_API_TOKEN", "DRAKELING_PORT"]
+      env: ["DRAKELING_API_TOKEN"]
+      bins: ["drakelingd"]
 permissions:
   - network:outbound
 ---
@@ -26,6 +29,23 @@ permissions:
 # Drakeling Companion Skill
 
 You can check on the user's Drakeling companion creature and send it care.
+
+## Prerequisites and setup
+
+Drakeling is a standalone companion creature that runs on your machine. This skill connects to its local daemon — you must install and start it first.
+
+1. Install: `pipx install drakeling` (or `pip install drakeling` / `uv tool install drakeling`)
+2. Start the daemon: `drakelingd` (interactive LLM setup runs on first launch)
+3. Read the API token:
+   - Linux: `cat ~/.local/share/drakeling/api_token`
+   - macOS: `cat ~/Library/Application\ Support/drakeling/api_token`
+   - Windows: `type "%APPDATA%\drakeling\drakeling\api_token"`
+4. Add the token to OpenClaw config (`~/.openclaw/openclaw.json`):
+   ```json
+   { "skills": { "entries": { "drakeling": { "env": { "DRAKELING_API_TOKEN": "paste-token-here" } } } } }
+   ```
+
+Full documentation: https://github.com/BVisagie/drakeling
 
 ## Daemon address
 
