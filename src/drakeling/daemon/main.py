@@ -8,6 +8,7 @@ import uvicorn
 
 from drakeling.crypto.token import ensure_api_token
 from drakeling.daemon.config import DrakelingConfig, load_dotenv_from_data_dir
+from drakeling.daemon.setup import check_llm_setup
 from drakeling.daemon.startup import check_machine_binding
 from drakeling.storage.database import get_engine, get_session_factory, run_migrations
 from drakeling.storage.paths import get_data_dir
@@ -39,6 +40,8 @@ async def _startup() -> None:
         allow_import=args.allow_import or args.dev,
     )
 
+    check_llm_setup(config, data_dir)
+
     api_token = ensure_api_token(data_dir)
 
     engine = get_engine(data_dir)
@@ -62,12 +65,6 @@ async def _startup() -> None:
             print(f"LLM mode: OpenClaw gateway ({config.openclaw_gateway_url})")
         elif config.llm_base_url:
             print(f"LLM mode: direct provider ({config.llm_base_url})")
-        else:
-            print(
-                "WARNING: No LLM provider configured. "
-                "Set DRAKELING_LLM_BASE_URL or DRAKELING_USE_OPENCLAW_GATEWAY=true.",
-                file=sys.stderr,
-            )
 
     # Set up LLM wrapper
     from drakeling.llm.wrapper import LLMWrapper

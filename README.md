@@ -50,6 +50,8 @@ drakelingd
 
 On first run, the daemon:
 - creates the platform data directory (see [Data directory](#data-directory) below)
+- walks you through an **interactive LLM setup** — pick your provider, enter
+  your endpoint URL and credentials, and the daemon writes a `.env` file for you
 - generates an ed25519 identity keypair (machine binding)
 - generates a local API token
 - begins listening on `http://127.0.0.1:52780`
@@ -177,11 +179,14 @@ inherit shell profiles like `~/.bashrc`.
 
 ### LLM configuration
 
-The daemon works without an LLM provider — your creature will still live, grow,
-and decay — but it won't be able to talk or reflect. To enable conversations,
-configure one of the following:
+Your creature needs an LLM provider to talk and reflect. On first run,
+`drakelingd` walks you through setup interactively. You can also configure it
+manually by editing the `.env` file in the data directory.
 
-#### Option A — OpenAI cloud
+#### Option A — Any OpenAI-compatible LLM provider
+
+Works with OpenAI, Ollama, vLLM, LiteLLM, or any service that exposes an
+OpenAI-compatible `/v1` endpoint.
 
 ```dotenv
 DRAKELING_LLM_BASE_URL=https://api.openai.com/v1
@@ -189,7 +194,7 @@ DRAKELING_LLM_API_KEY=sk-...
 DRAKELING_LLM_MODEL=gpt-4o-mini
 ```
 
-#### Option B — Ollama local (free, no data leaves your machine)
+For local LLMs (e.g. Ollama), the API key can be any non-empty string:
 
 ```dotenv
 DRAKELING_LLM_BASE_URL=http://127.0.0.1:11434/v1
@@ -197,10 +202,10 @@ DRAKELING_LLM_API_KEY=ollama-local
 DRAKELING_LLM_MODEL=llama3.3
 ```
 
-#### Option C — OpenClaw gateway delegation
+#### Option B — OpenClaw gateway delegation
 
 If you already run OpenClaw, this is the easiest option. Any model OpenClaw
-supports (cloud or local) becomes available to Hatchling with no additional
+supports (cloud or local) becomes available to Drakeling with no additional
 provider configuration.
 
 ```dotenv
