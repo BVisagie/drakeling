@@ -34,6 +34,7 @@ def create_app(
     from drakeling.api.birth import router as birth_router
     from drakeling.api.care import router as care_router
     from drakeling.api.export_import import router as export_import_router
+    from drakeling.api.release import router as release_router
     from drakeling.api.rest import router as rest_router
     from drakeling.api.status import router as status_router
     from drakeling.api.talk import router as talk_router
@@ -45,6 +46,7 @@ def create_app(
     app.include_router(rest_router)
     app.include_router(attention_router)
     app.include_router(export_import_router)
+    app.include_router(release_router)
 
     return app
 

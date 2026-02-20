@@ -30,6 +30,9 @@ async def status(request: Request, session: AsyncSession = Depends(get_session))
         "loneliness": creature.loneliness,
         "state_curiosity": creature.state_curiosity,
         "stability": creature.stability,
+        "born_at": creature.born_at,
+        "cumulative_care_events": creature.cumulative_care_events,
+        "cumulative_talk_interactions": creature.cumulative_talk_interactions,
         "budget_exhausted": creature.lifecycle_stage == "exhausted",
         "budget_remaining_today": budget_remaining,
     }

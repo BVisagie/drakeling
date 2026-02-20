@@ -9,7 +9,7 @@ from sqlalchemy import select
 
 from drakeling.api.app import create_app
 from drakeling.daemon.config import DrakelingConfig
-from drakeling.storage.database import get_engine, get_session_factory, init_db
+from drakeling.storage.database import get_engine, get_session_factory, run_migrations
 from drakeling.storage.models import CreatureStateRow
 
 
@@ -22,7 +22,7 @@ async def app_and_client(tmp_path):
 
     config = DrakelingConfig(dev_mode=True, allow_import=True)
     engine = get_engine(tmp_path)
-    await init_db(engine)
+    await run_migrations(engine)
     session_factory = get_session_factory(engine)
 
     app = create_app(

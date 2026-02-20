@@ -20,6 +20,7 @@ dependencies = [
     "cryptography>=46.0.5",
     "textual>=8.0.0",
     "platformdirs>=4.9.2",
+    "alembic>=1.16",
 ]
 
 [project.urls]

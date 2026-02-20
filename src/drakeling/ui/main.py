@@ -56,6 +56,7 @@ class MainScreen(Screen):
         Binding("f2", "care_menu", "Care"),
         Binding("f3", "rest", "Rest"),
         Binding("f4", "focus_input", "Talk"),
+        Binding("f8", "release", "Release"),
         Binding("q", "quit", "Quit"),
     ]
 
@@ -212,6 +213,18 @@ class MainScreen(Screen):
     def action_focus_input(self) -> None:
         self.query_one("#talk-input", Input).focus()
 
+    def action_release(self) -> None:
+        from drakeling.ui.release import ReleaseSummaryScreen
+
+        self.app.push_screen(
+            ReleaseSummaryScreen(self._client, self._status),
+            callback=self._on_release_result,
+        )
+
+    def _on_release_result(self, result: object = None) -> None:
+        if result == "released":
+            self.dismiss("released")
+
 
 class HatchlingApp(App):
     """Terminal UI entry point for Drakeling."""
@@ -266,19 +279,34 @@ class HatchlingApp(App):
                 callback=self._on_birth_dismissed,
             )
         else:
-            self.push_screen(MainScreen(self._client, status))
+            self._push_main(status)
+
+    def _push_main(self, status: dict) -> None:
+        self.push_screen(
+            MainScreen(self._client, status),
+            callback=self._on_main_dismissed,
+        )
+
+    def _on_main_dismissed(self, result: object = None) -> None:
+        if result == "released":
+            self.run_worker(self._try_connect())
 
     def _on_error_dismissed(self, result: object = None) -> None:
         if result == "retry":
             self.run_worker(self._try_connect())
 
     def _on_birth_dismissed(self, result: object = None) -> None:
-        self.run_worker(self._show_main())
+        # Result is the status dict when birth succeeded; push MainScreen
+        # immediately to avoid showing a black default screen.
+        if isinstance(result, dict):
+            self._push_main(result)
+        else:
+            self.run_worker(self._show_main())
 
     async def _show_main(self) -> None:
         status = await self._client.get_status()
         if status:
-            self.push_screen(MainScreen(self._client, status))
+            self._push_main(status)
 
     async def on_unmount(self) -> None:
         await self._client.close()

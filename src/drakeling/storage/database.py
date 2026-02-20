@@ -4,9 +4,9 @@ from pathlib import Path
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 
-from drakeling.storage.models import Base
-
 DB_FILENAME = "drakeling.db"
+
+_MIGRATIONS_DIR = str(Path(__file__).parent / "migrations")
 
 
 def get_engine(data_dir: Path):
@@ -18,7 +18,17 @@ def get_session_factory(engine) -> async_sessionmaker[AsyncSession]:
     return async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
 
 
-async def init_db(engine) -> None:
-    """Create all tables if they don't exist."""
+def _run_alembic(connection) -> None:  # type: ignore[no-untyped-def]
+    from alembic import command
+    from alembic.config import Config
+
+    cfg = Config()
+    cfg.set_main_option("script_location", _MIGRATIONS_DIR)
+    cfg.attributes["connection"] = connection
+    command.upgrade(cfg, "head")
+
+
+async def run_migrations(engine) -> None:
+    """Run Alembic migrations to head."""
     async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+        await conn.run_sync(_run_alembic)

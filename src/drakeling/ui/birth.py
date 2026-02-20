@@ -156,4 +156,7 @@ class BirthScreen(Screen):
         )
         import asyncio
         await asyncio.sleep(1.5)
-        self.app.pop_screen()
+        # Fetch status before dismissing so the callback can push MainScreen
+        # immediately, avoiding a black screen gap.
+        status = await self._client.get_status()
+        self.dismiss(status)

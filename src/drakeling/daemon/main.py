@@ -9,7 +9,7 @@ import uvicorn
 from drakeling.crypto.token import ensure_api_token
 from drakeling.daemon.config import DrakelingConfig, load_dotenv_from_data_dir
 from drakeling.daemon.startup import check_machine_binding
-from drakeling.storage.database import get_engine, get_session_factory, init_db
+from drakeling.storage.database import get_engine, get_session_factory, run_migrations
 from drakeling.storage.paths import get_data_dir
 
 
@@ -42,7 +42,7 @@ async def _startup() -> None:
     api_token = ensure_api_token(data_dir)
 
     engine = get_engine(data_dir)
-    await init_db(engine)
+    await run_migrations(engine)
     session_factory = get_session_factory(engine)
 
     async with session_factory() as session:

@@ -99,6 +99,13 @@ class DrakelingClient:
         resp.raise_for_status()
         return resp.json()
 
+    async def release(self) -> dict[str, Any]:
+        """Release (delete) the current creature. Irreversible."""
+        client = self._ensure_client()
+        resp = await client.request("DELETE", "/creature", json={"confirm": True})
+        resp.raise_for_status()
+        return resp.json()
+
     async def needs_attention(self) -> dict[str, Any]:
         client = self._ensure_client()
         resp = await client.get("/needs-attention")
