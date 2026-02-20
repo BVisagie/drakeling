@@ -74,11 +74,20 @@ interact with it.
 
 ### 3. Interact
 
-- **Care** — give your hatchling gentle attention, reassurance, or quiet
-  presence through the UI or the API.
-- **Talk** — once hatched, you can have short conversations (requires an LLM
-  provider — see [LLM configuration](#llm-configuration)).
-- **Rest** — manually send your creature to sleep if it needs a break.
+| Key | Action | What it does |
+|-----|--------|--------------|
+| F2 | Care | Show gentle attention — lifts mood, eases loneliness |
+| F3 | Rest | Put your creature to sleep — recovers energy and stability |
+| F4 / Ctrl+T | Talk | Focus the text input, type a message and press Enter |
+| F5 / Ctrl+F | Feed | Feed your creature — boosts energy and mood |
+| F1 / ? | Help | Open the in-app help overlay |
+| F8 | Release | Say goodbye (irreversible) |
+
+**Talking** requires an LLM provider — see [LLM configuration](#llm-configuration).
+Talking lifts mood, builds trust, sparks curiosity, and eases loneliness.
+
+**Embedded terminals** (Zed, VS Code, etc.) may intercept F-keys. Use the
+alternative bindings shown above (?, Ctrl+T, Ctrl+F) when F-keys do not work.
 
 ## Data directory
 

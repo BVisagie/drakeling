@@ -1,6 +1,6 @@
 # OpenClaw Integration Guide
 
-**Correct as of:** February 2025  
+**Correct as of:** February 2026  
 **Upstream docs:** [docs.openclaw.ai](https://docs.openclaw.ai/)
 
 This guide documents how to connect Drakeling with OpenClaw. It is based on the current OpenClaw documentation and may need updating if OpenClaw changes.
@@ -93,7 +93,7 @@ Per-skill fields:
 
 ### Daemon Address
 
-The skill assumes the Drakeling daemon listens on `http://127.0.0.1:52780`. If you use a custom port via `DRAKELING_PORT`, the skill instructions would need to be updated or the agent must infer the URL. The current skill docs use the default; custom ports are a known limitation.
+The skill assumes the Drakeling daemon listens on `http://127.0.0.1:52780` by default. If you use a custom port via `DRAKELING_PORT`, the skill metadata declares that variable and the agent will read it automatically.
 
 ### Valid Care Types
 

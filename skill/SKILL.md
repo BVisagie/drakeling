@@ -10,13 +10,15 @@ metadata:
       env:
         - name: DRAKELING_API_TOKEN
           description: Bearer token for the local Drakeling daemon. Found in the Drakeling data directory as `api_token`.
+        - name: DRAKELING_PORT
+          description: Optional. Port the Drakeling daemon listens on. Defaults to 52780.
       network:
         - localhost
   openclaw:
     emoji: "🥚"
     primaryEnv: DRAKELING_API_TOKEN
     requires:
-      env: ["DRAKELING_API_TOKEN"]
+      env: ["DRAKELING_API_TOKEN", "DRAKELING_PORT"]
 permissions:
   - network:outbound
 ---
