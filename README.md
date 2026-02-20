@@ -112,6 +112,20 @@ Contents:
 | `api_token` | Bearer token for authenticating API requests |
 | `.env` | Optional — environment variable overrides (see below) |
 
+### Retrieving the API token
+
+The daemon generates an API token on first run and writes it to the
+`api_token` file in the data directory. To read it later:
+
+| Platform | Command |
+|---|---|
+| Linux | `cat ~/.local/share/drakeling/api_token` |
+| macOS | `cat ~/Library/Application\ Support/drakeling/api_token` |
+| Windows | `type "%APPDATA%\drakeling\drakeling\api_token"` |
+
+You need this token for API requests (export, import) and for OpenClaw Skill
+configuration. See [OpenClaw Skill setup](#openclaw-skill-setup).
+
 ## Upgrading, uninstalling, and reinstalling
 
 ### Upgrading (keep your creature)
