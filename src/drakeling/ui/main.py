@@ -58,9 +58,11 @@ class MainScreen(Screen):
 
     BINDINGS: ClassVar[list[Binding]] = [
         Binding("f1", "help", "Help", priority=True),
+        Binding("?", "help", "Help", show=False, priority=True),
         Binding("f2", "care_menu", "Care", priority=True),
         Binding("f3", "rest", "Rest", priority=True),
         Binding("f4", "focus_input", "Talk"),
+        Binding("ctrl+t", "focus_input", "Talk", show=False, priority=True),
         Binding("f5", "feed", "Feed", priority=True),
         Binding("ctrl+f", "feed", "Feed", show=False, priority=True),
         Binding("f8", "release", "Release", priority=True),

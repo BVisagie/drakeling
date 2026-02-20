@@ -12,6 +12,11 @@ metadata:
           description: Bearer token for the local Drakeling daemon. Found in the Drakeling data directory as `api_token`.
       network:
         - localhost
+  openclaw:
+    emoji: "🥚"
+    primaryEnv: DRAKELING_API_TOKEN
+    requires:
+      env: ["DRAKELING_API_TOKEN"]
 permissions:
   - network:outbound
 ---

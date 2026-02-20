@@ -19,8 +19,8 @@ ENV_TEMPLATE = """\
 
 # --- Option B: OpenClaw gateway ---
 # DRAKELING_USE_OPENCLAW_GATEWAY=true
-# DRAKELING_OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789
-# DRAKELING_OPENCLAW_GATEWAY_TOKEN=
+# DRAKELING_OPENCLAW_GATEWAY_URL=    # leave blank for default http://127.0.0.1:18789
+# DRAKELING_OPENCLAW_GATEWAY_TOKEN=  # leave blank if gateway has no auth
 """
 
 _LLM_ENV_PREFIXES = (
@@ -75,7 +75,7 @@ def _run_wizard(env_path: Path) -> None:
     else:
         print()
         gateway_url = _prompt_optional(
-            "Gateway URL [http://127.0.0.1:18789]: ",
+            "Gateway URL (leave blank for default http://127.0.0.1:18789): ",
             default="http://127.0.0.1:18789",
         )
         gateway_token = _prompt_optional(

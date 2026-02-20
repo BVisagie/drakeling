@@ -210,8 +210,8 @@ provider configuration.
 
 ```dotenv
 DRAKELING_USE_OPENCLAW_GATEWAY=true
-# DRAKELING_OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789  # only if non-default port
-# DRAKELING_OPENCLAW_GATEWAY_TOKEN=your-gateway-token     # if gateway requires auth
+# DRAKELING_OPENCLAW_GATEWAY_URL=    # leave blank for default http://127.0.0.1:18789
+# DRAKELING_OPENCLAW_GATEWAY_TOKEN=  # leave blank if gateway has no auth
 ```
 
 ## Export and import

@@ -57,7 +57,7 @@ Precedence: workspace → managed → bundled. If the same skill name exists in 
 
 ### Configure the API Token
 
-The skill requires `DRAKELING_API_TOKEN`. Add it under `skills.entries.drakeling` in `~/.openclaw/openclaw.json`:
+The skill requires `DRAKELING_API_TOKEN`. **Install the skill first** (step 1 below), then add the token. If `skills.entries.drakeling` causes OpenClaw doctor to fail or strip your config, use the [top-level env alternative](#troubleshooting) instead.
 
 1. Start the Drakeling daemon at least once: `drakelingd`
 2. Read the API token:
@@ -81,7 +81,11 @@ The skill requires `DRAKELING_API_TOKEN`. Add it under `skills.entries.drakeling
 }
 ```
 
-If your config already has a `skills` object, merge the `entries.drakeling` block into it. Per-skill fields:
+If your config already has a `skills` object, merge the `entries.drakeling` block into it.
+
+**If OpenClaw doctor rejects this:** Use a top-level `env` block instead — see [Troubleshooting](#troubleshooting).
+
+Per-skill fields:
 
 - `enabled`: `true` (default) or `false` to disable
 - `env`: Environment variables injected for agent runs (only if not already set)
@@ -141,14 +145,14 @@ Set these in Drakeling's `.env` file (in the platform data directory: `~/.local/
 
 ```dotenv
 DRAKELING_USE_OPENCLAW_GATEWAY=true
-DRAKELING_OPENCLAW_GATEWAY_URL=http://127.0.0.1:18789
-DRAKELING_OPENCLAW_GATEWAY_TOKEN=your-gateway-token-here
+DRAKELING_OPENCLAW_GATEWAY_URL=    # leave blank for default http://127.0.0.1:18789
+DRAKELING_OPENCLAW_GATEWAY_TOKEN=  # leave blank if gateway has no auth
 ```
 
 Optional:
 
 - `DRAKELING_OPENCLAW_GATEWAY_MODEL` — Model to request (e.g. `anthropic/claude-sonnet-4-5`). If unset, the Gateway uses its default.
-- `DRAKELING_OPENCLAW_GATEWAY_URL` — Only needed if the Gateway runs on a non-default port (default: `http://127.0.0.1:18789`).
+- `DRAKELING_OPENCLAW_GATEWAY_URL` — Leave blank for default `http://127.0.0.1:18789`. Set only if the Gateway runs on a different port.
 
 ### Behavior
 
@@ -174,6 +178,44 @@ From [Skills Config](https://docs.openclaw.ai/tools/skills-config):
 | `skills.allowBundled` | Allowlist for bundled skills only |
 
 Changes to skills config take effect on the next agent turn when the watcher is enabled.
+
+---
+
+## Troubleshooting
+
+### OpenClaw doctor reports "unrecognized key" or strips my config
+
+**Order of operations matters.** Install the skill *before* adding it to `skills.entries`:
+
+1. Run `clawhub install drakeling` (or copy `skill/` to `~/.openclaw/skills/drakeling/`)
+2. Restart or start OpenClaw so it loads the skill
+3. Then add `skills.entries.drakeling` to `~/.openclaw/openclaw.json`
+
+If you add the config before the skill exists, OpenClaw's schema validation may reject or strip the entry.
+
+**Alternative:** Use the top-level `env` block instead of `skills.entries.drakeling.env`:
+
+```json5
+{
+  "env": {
+    "DRAKELING_API_TOKEN": "your-token-here"
+  }
+}
+```
+
+This makes the token available to all agents. It works even if `skills.entries.drakeling` is rejected.
+
+### 403 Forbidden from Drakeling
+
+A 403 from the Drakeling daemon means the token is wrong or missing:
+
+- Ensure the token in OpenClaw config exactly matches `~/.local/share/drakeling/api_token` (Linux)
+- Ensure the Drakeling daemon is running: `drakelingd`
+- Restart OpenClaw after changing the token so it picks up the new value
+
+### OpenClaw doctor --fix removed my drakeling config
+
+Run `openclaw doctor` without `--fix` first to see what it reports. If the schema rejects `skills.entries.drakeling`, use the top-level `env` block (see above) instead.
 
 ---
 

@@ -18,6 +18,9 @@ Talk to it, care for it, and let it rest when it needs to.
 
 [bold underline]Actions[/]
 
+  [bold]F1  Help[/]        This screen.
+                    (? if F-keys don't work in your terminal)
+
   [bold]F2  Care[/]        Show gentle attention.
                     Lifts mood and eases loneliness.
 
@@ -25,13 +28,12 @@ Talk to it, care for it, and let it rest when it needs to.
                     Rest recovers energy and stability.
                     It wakes on its own when ready.
 
-  [bold]F4  Talk[/]        Focus the text input.
+  [bold]F4  Talk[/]        Focus the text input (Ctrl+T works too).
                     Type a message and press Enter.
                     Talking lifts mood, builds trust,
                     sparks curiosity, and eases loneliness.
 
-  [bold]F5  Feed[/]        Feed your creature.
-                    (Ctrl+F works too)
+  [bold]F5  Feed[/]        Feed your creature (Ctrl+F works too).
                     Boosts energy and mood,
                     and eases loneliness.
 
@@ -57,7 +59,10 @@ Talk to it, care for it, and let it rest when it needs to.
   [bold]Stability[/]       Inner balance. Only recovers during rest.
                     Let your creature sleep to restore it.
 
-[dim]Press any key to close.[/]\
+[dim]Press any key to close.[/]
+
+[dim]In embedded terminals (Zed, VS Code, etc.), F-keys may not work.
+Use ? for Help, Ctrl+T for Talk, Ctrl+F for Feed.[/]
 """
 
 
