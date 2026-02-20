@@ -1,6 +1,6 @@
 # Drakeling
 
-A local, lightweight, learning-only companion creature. Drakeling is part of the OpenClaw ecosystem.
+A local, lightweight, learning-only companion creature. Drakeling may optionally be linked to the OpenClaw ecosystem.
 
 Hatchling is a small digital dragon that lives on your machine. It reflects,
 learns about you, and expresses feelings — but never performs tasks, accesses

@@ -8,7 +8,7 @@ drakeling
 
 ## 1. Project purpose
 
-Drakeling is a local, lightweight, learning-only companion creature for the OpenClaw ecosystem.
+Drakeling is a local, lightweight, learning-only companion creature which may optionally be linked to the OpenClaw ecosystem.
 
 It is:
 - a digital creature with a lifecycle and personality
