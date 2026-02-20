@@ -1,6 +1,6 @@
 ---
 name: drakeling
-version: 1.0.0
+version: 1.0.1
 description: Check on your Hatchling companion creature, send it care, or see how it is feeling. Use when the user mentions their hatchling, companion creature, or wants to check in on or care for their creature.
 author: drakeling
 metadata:
