@@ -103,7 +103,9 @@ If the daemon runs on a non-default port, set `DRAKELING_PORT` in the skill env 
 
 **Skill not appearing in OpenClaw:** The skill requires `drakelingd` on your PATH. Install the drakeling package first (step 1).
 
-**403 Forbidden:** The API token is wrong or missing. Ensure the token in OpenClaw config exactly matches the contents of the `api_token` file in the data directory.
+**403 Forbidden:** The request has no `Authorization` header — the `DRAKELING_API_TOKEN` env var is not reaching the skill. Check that your config uses `skills.entries.drakeling.env`, not `skills.drakeling.env` (the latter is ignored by OpenClaw). Restart OpenClaw after fixing the config.
+
+**401 Invalid API token:** The token was sent but does not match the daemon's token. Ensure the value in OpenClaw config exactly matches the contents of the `api_token` file in the data directory.
 
 **Connection refused:** The daemon is not running. Start it with `drakelingd`.
 

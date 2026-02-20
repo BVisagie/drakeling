@@ -207,11 +207,15 @@ This makes the token available to all agents. It works even if `skills.entries.d
 
 ### 403 Forbidden from Drakeling
 
-A 403 from the Drakeling daemon means the token is wrong or missing:
+A 403 means the request arrived with **no `Authorization` header at all**. The daemon never saw a token — this is different from a wrong token (which returns 401). The most common cause is `DRAKELING_API_TOKEN` not reaching the skill's environment.
 
-- Ensure the token in OpenClaw config exactly matches `~/.local/share/drakeling/api_token` (Linux)
+- Verify `drakeling` is inside `skills.entries`, not a sibling of it. `skills.drakeling.env` is ignored by OpenClaw — it must be `skills.entries.drakeling.env`.
 - Ensure the Drakeling daemon is running: `drakelingd`
-- Restart OpenClaw after changing the token so it picks up the new value
+- Restart OpenClaw after changing the config so it picks up the new value
+
+### 401 Invalid API token
+
+A 401 means the `Authorization` header was sent but the token does not match. Ensure the token in OpenClaw config exactly matches `~/.local/share/drakeling/api_token` (Linux) or the equivalent path on your platform.
 
 ### OpenClaw doctor --fix removed my drakeling config
 

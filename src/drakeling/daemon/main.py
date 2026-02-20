@@ -128,8 +128,18 @@ async def _startup() -> None:
     llm.set_budget_exhausted_callback(_on_budget_exhausted)
 
     if config.use_openclaw_gateway:
-        reachable = await llm.health_check()
-        if not reachable:
+        gw_status = await llm.health_check()
+        if gw_status == "endpoint_disabled":
+            print(
+                "WARNING: OpenClaw gateway chat completions endpoint "
+                "returned 405 (disabled).\n"
+                "Enable it in ~/.openclaw/openclaw.json:\n"
+                "\n"
+                '  { "gateway": { "http": { "endpoints": '
+                '{ "chatCompletions": { "enabled": true } } } } }',
+                file=sys.stderr,
+            )
+        elif gw_status == "unreachable":
             print(
                 "WARNING: OpenClaw gateway is unreachable. "
                 "LLM calls will fail until it becomes available.",

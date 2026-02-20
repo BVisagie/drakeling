@@ -7,7 +7,7 @@ from __future__ import annotations
 
 import logging
 from datetime import date
-from typing import Any
+from typing import Any, Literal
 
 import httpx
 
@@ -71,6 +71,19 @@ class LLMWrapper:
             resp = await self._client.post(url, headers=headers, json=body)
             resp.raise_for_status()
             data = resp.json()
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 405:
+                logger.error(
+                    "OpenClaw gateway returned 405 — the chat completions "
+                    "endpoint is likely disabled. Enable it in "
+                    "~/.openclaw/openclaw.json: "
+                    "gateway.http.endpoints.chatCompletions.enabled = true"
+                )
+            else:
+                logger.exception(
+                    "LLM call failed (HTTP %d)", exc.response.status_code
+                )
+            return None
         except Exception:
             logger.exception("LLM call failed")
             return None
@@ -120,21 +133,34 @@ class LLMWrapper:
         headers["Content-Type"] = "application/json"
         return url, headers, body
 
-    async def health_check(self) -> bool:
-        """Lightweight check for gateway reachability. Non-blocking."""
+    async def health_check(
+        self,
+    ) -> Literal["ok", "endpoint_disabled", "unreachable"]:
+        """Probe the gateway's chat completions endpoint at startup.
+
+        Returns ``"ok"`` if the endpoint is live (any non-405, non-5xx response),
+        ``"endpoint_disabled"`` if the gateway returns 405, or ``"unreachable"``
+        on connection failure or 5xx.
+        """
         if not self._config.use_openclaw_gateway:
-            return True
+            return "ok"
+        url = (
+            f"{self._config.openclaw_gateway_url.rstrip('/')}"
+            "/v1/chat/completions"
+        )
         try:
-            resp = await self._client.get(
-                self._config.openclaw_gateway_url, timeout=5.0
-            )
-            return resp.status_code < 500
+            resp = await self._client.post(url, json={}, timeout=5.0)
+            if resp.status_code == 405:
+                return "endpoint_disabled"
+            if resp.status_code >= 500:
+                return "unreachable"
+            return "ok"
         except Exception:
             logger.warning(
                 "OpenClaw gateway unreachable at %s",
                 self._config.openclaw_gateway_url,
             )
-            return False
+            return "unreachable"
 
     async def close(self) -> None:
         await self._client.aclose()
