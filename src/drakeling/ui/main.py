@@ -9,6 +9,8 @@ from textual.containers import Center, Horizontal, Vertical
 from textual.screen import Screen
 from textual.widgets import Footer, Header, Input, Label, Static
 
+import httpx
+
 from drakeling.domain.models import DragonColour, LifecycleStage
 from drakeling.ui.client import DaemonNotAvailable, DrakelingClient
 from drakeling.ui.widgets.feed import InteractionFeed
@@ -55,12 +57,13 @@ class MainScreen(Screen):
     """Primary creature status and interaction screen."""
 
     BINDINGS: ClassVar[list[Binding]] = [
-        Binding("f1", "help", "Help"),
-        Binding("f2", "care_menu", "Care"),
-        Binding("f3", "rest", "Rest"),
+        Binding("f1", "help", "Help", priority=True),
+        Binding("f2", "care_menu", "Care", priority=True),
+        Binding("f3", "rest", "Rest", priority=True),
         Binding("f4", "focus_input", "Talk"),
-        Binding("f5", "feed", "Feed"),
-        Binding("f8", "release", "Release"),
+        Binding("f5", "feed", "Feed", priority=True),
+        Binding("ctrl+f", "feed", "Feed", show=False, priority=True),
+        Binding("f8", "release", "Release", priority=True),
         Binding("q", "quit", "Quit"),
     ]
 
@@ -222,6 +225,16 @@ class MainScreen(Screen):
             if response:
                 feed.add_creature_message(response, self._colour.hex_tint)
             feed.add_system_note("your creature is resting")
+        except httpx.HTTPStatusError as exc:
+            detail = ""
+            try:
+                body = exc.response.json()
+                if isinstance(body, dict) and "detail" in body:
+                    detail = body["detail"]
+            except Exception:
+                pass
+            msg = detail or str(exc)
+            feed.add_system_note(f"(could not rest: {msg})")
         except Exception as exc:
             feed.add_system_note(f"(could not rest: {exc})")
 

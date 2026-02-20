@@ -297,19 +297,28 @@ Or import `deploy/drakeling-task.xml` via the Task Scheduler GUI.
 
 This lets OpenClaw agents check on your hatchling and give it care autonomously.
 
-1. Start the daemon at least once: `drakelingd`
-2. Read the API token:
+1. Install the skill: `clawhub install drakeling` (or copy `skill/` to `~/.openclaw/skills/drakeling/`)
+2. Start the daemon at least once: `drakelingd`
+3. Read the API token:
    - Linux: `cat ~/.local/share/drakeling/api_token`
    - macOS: `cat ~/Library/Application\ Support/drakeling/api_token`
    - Windows: `type "%APPDATA%\drakeling\drakeling\api_token"`
-3. Add to your OpenClaw config:
-   ```yaml
-   skills:
-     entries:
-       drakeling:
-         env:
-           DRAKELING_API_TOKEN: "paste-token-here"
+4. Add to `~/.openclaw/openclaw.json` under `skills.entries.drakeling`:
+   ```json
+   {
+     "skills": {
+       "entries": {
+         "drakeling": {
+           "env": {
+             "DRAKELING_API_TOKEN": "paste-token-here"
+           }
+         }
+       }
+     }
+   }
    ```
+
+See [docs/openclaw_integration.md](docs/openclaw_integration.md) for the full OpenClaw integration guide (config format, gateway delegation, and references).
 
 The skill only uses `/status` (read) and `/care` (write). It never calls
 `/talk`, `/rest`, `/export`, or `/import`.

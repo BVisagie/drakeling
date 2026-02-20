@@ -31,6 +31,7 @@ Talk to it, care for it, and let it rest when it needs to.
                     sparks curiosity, and eases loneliness.
 
   [bold]F5  Feed[/]        Feed your creature.
+                    (Ctrl+F works too)
                     Boosts energy and mood,
                     and eases loneliness.
 

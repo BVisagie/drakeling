@@ -55,6 +55,7 @@ Valid care types:
 - `gentle_attention` — the default, for general check-ins
 - `reassurance` — when the user seems worried about their creature
 - `quiet_presence` — when the user just wants to be nearby
+- `feed` — when the user wants to feed the creature (boosts energy and mood)
 
 Choose the type based on the user's tone. Present any creature response from the API in the creature's own words, not paraphrased.
 

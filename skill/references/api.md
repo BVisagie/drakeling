@@ -47,7 +47,7 @@ Content-Type: application/json
 { "type": "gentle_attention" }
 ```
 
-Valid types: `gentle_attention`, `reassurance`, `quiet_presence`.
+Valid types: `gentle_attention`, `reassurance`, `quiet_presence`, `feed`.
 
 **Response (200):**
 
