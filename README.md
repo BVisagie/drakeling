@@ -210,6 +210,25 @@ Your creature needs an LLM provider to talk and reflect. On first run,
 `drakelingd` walks you through setup interactively. You can also configure it
 manually by editing the `.env` file in the data directory.
 
+Important base URL rule:
+- `DRAKELING_LLM_BASE_URL` must point to the provider's API root (usually ending in `/v1`).
+- Do not include `/chat/completions` in `DRAKELING_LLM_BASE_URL`.
+- Drakeling appends `/chat/completions` automatically.
+
+Examples:
+- Correct: `http://127.0.0.1:11434/v1`
+- Wrong: `http://127.0.0.1:11434/v1/chat/completions`
+
+Common base URL patterns (direct provider mode):
+
+| Provider | Base URL (`DRAKELING_LLM_BASE_URL`) |
+|---|---|
+| OpenAI | `https://api.openai.com/v1` |
+| Ollama (local) | `http://127.0.0.1:11434/v1` |
+| LM Studio (local server) | `http://127.0.0.1:1234/v1` |
+| vLLM (default local server) | `http://127.0.0.1:8000/v1` |
+| OpenRouter | `https://openrouter.ai/api/v1` |
+
 #### Option A — Any OpenAI-compatible LLM provider
 
 Works with OpenAI, Ollama, vLLM, LiteLLM, or any service that exposes an
@@ -229,6 +248,12 @@ DRAKELING_LLM_API_KEY=ollama-local
 DRAKELING_LLM_MODEL=llama3.3
 ```
 
+Common model name examples (set in `DRAKELING_LLM_MODEL`):
+- Ollama local: `qwen3:14b`, `llama3.3`
+- OpenAI: `gpt-4o-mini`
+- OpenRouter: `openai/gpt-oss-20b`
+- vLLM (self-hosted): `NousResearch/Meta-Llama-3-8B-Instruct`
+
 #### Option B — OpenClaw gateway delegation
 
 If you already run OpenClaw, this is the easiest option. Any model OpenClaw
@@ -239,7 +264,26 @@ provider configuration.
 DRAKELING_USE_OPENCLAW_GATEWAY=true
 # DRAKELING_OPENCLAW_GATEWAY_URL=    # leave blank for default http://127.0.0.1:18789
 # DRAKELING_OPENCLAW_GATEWAY_TOKEN=  # leave blank if gateway has no auth
+# DRAKELING_OPENCLAW_GATEWAY_MODEL=openai/gpt-oss-20b
 ```
+
+If you set `DRAKELING_OPENCLAW_GATEWAY_MODEL`, use a model identifier that
+your OpenClaw gateway can serve (for example cloud models like
+`openai/gpt-oss-20b` or local models exposed by your OpenClaw setup).
+
+#### Troubleshooting common URL mistakes
+
+If daemon logs show an error like:
+
+`404 Not Found ... /v1/chat/completions/chat/completions`
+
+your base URL is too specific. This usually means
+`DRAKELING_LLM_BASE_URL` was set to include `/chat/completions`.
+
+Fix:
+- Set `DRAKELING_LLM_BASE_URL` to the provider root only (for example `http://127.0.0.1:11434/v1`).
+- Keep `/chat/completions` out of the `.env` value.
+- Restart `drakelingd` after updating `.env`.
 
 ## Export and import
 

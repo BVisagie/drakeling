@@ -173,22 +173,59 @@ class MainScreen(Screen):
     @work(thread=False)
     async def _do_talk(self, message: str) -> None:
         feed = self.query_one("#feed", InteractionFeed)
-        try:
-            result = await self._client.talk(message)
-            if "cooldown_remaining" in result:
-                secs = int(result["cooldown_remaining"])
-                feed.add_system_note(f"(give them a moment... {secs}s)")
+        for attempt in range(2):
+            try:
+                result = await self._client.talk(message, timeout=60.0)
+                if "cooldown_remaining" in result:
+                    secs = int(result["cooldown_remaining"])
+                    feed.add_system_note(f"(give them a moment... {secs}s)")
+                    return
+                response = result.get("response")
+                if response:
+                    feed.add_creature_message(response, self._colour.hex_tint)
+                elif result.get("budget_exhausted"):
+                    feed.add_system_note("(resting quietly for now)")
+                if "state" in result:
+                    self._status.update(result["state"])
+                    self._refresh_stats()
                 return
-            response = result.get("response")
-            if response:
-                feed.add_creature_message(response, self._colour.hex_tint)
-            elif result.get("budget_exhausted"):
-                feed.add_system_note("(resting quietly for now)")
-            if "state" in result:
-                self._status.update(result["state"])
-                self._refresh_stats()
-        except Exception as exc:
-            feed.add_system_note(f"(could not reach daemon: {exc})")
+            except httpx.ReadTimeout:
+                if attempt == 0:
+                    feed.add_system_note(
+                        "(they are still thinking... local models can take a while. "
+                        "retrying once.)"
+                    )
+                    continue
+                feed.add_system_note(
+                    "(timed out waiting for reply. the daemon may still be processing. "
+                    "please try again shortly.)"
+                )
+                return
+            except httpx.HTTPStatusError as exc:
+                detail = ""
+                try:
+                    body = exc.response.json()
+                    if isinstance(body, dict) and "detail" in body:
+                        detail = str(body["detail"])
+                except Exception:
+                    pass
+
+                if (
+                    exc.response.status_code == 403
+                    and "not yet hatched" in detail.lower()
+                ):
+                    feed.add_system_note(
+                        "(your drakeling is still an egg and cannot talk yet. "
+                        "keep caring for it until it hatches.)"
+                    )
+                    return
+
+                msg = detail or str(exc)
+                feed.add_system_note(f"(could not talk: {msg})")
+                return
+            except Exception as exc:
+                feed.add_system_note(f"(could not reach daemon: {exc})")
+                return
 
     def action_care_menu(self) -> None:
         self._do_care("gentle_attention")

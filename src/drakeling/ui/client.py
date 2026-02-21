@@ -87,9 +87,14 @@ class DrakelingClient:
         resp.raise_for_status()
         return resp.json()
 
-    async def talk(self, message: str) -> dict[str, Any]:
+    async def talk(
+        self,
+        message: str,
+        *,
+        timeout: float | None = None,
+    ) -> dict[str, Any]:
         client = self._ensure_client()
-        resp = await client.post("/talk", json={"message": message})
+        resp = await client.post("/talk", json={"message": message}, timeout=timeout)
         resp.raise_for_status()
         return resp.json()
 
